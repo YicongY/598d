@@ -55,7 +55,7 @@ class Net(nn.Module):
         x = self.conv7_bn(x)
         x = self.conv8(x)
         x = self.conv8_bn(x)
-        x = self.conv8_dropout(x)
+        #x = self.conv8_dropout(x)
         x = x.reshape(x.size(0), -1)
         #print(x.size())
         x = self.fc1(x)
