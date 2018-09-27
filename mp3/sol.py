@@ -46,7 +46,7 @@ class Net(nn.Module):
         x = self.conv3_bn(x)
         x = self.conv4(x)
         x = self.conv4_max_pol(x)
-        x = self.conv4_dropout(x)
+        #x = self.conv4_dropout(x)
         x = self.conv5(x)
         x = self.conv5_bn(x)
         x = self.conv6(x)
@@ -90,7 +90,7 @@ def main():
 
     net = Net()
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(net.parameters(), lr = 0.001)
+    optimizer = optim.Adam(net.parameters(), lr = 0.0001)
     if torch.cuda.is_available():
         print('cuda')
         device = torch.device('cuda:0')
