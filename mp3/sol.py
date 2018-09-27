@@ -71,18 +71,18 @@ class Net(nn.Module):
 def main():
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
-        transforms.RandomVerticalFlip(),
+         transforms.RandomRotation(20),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                             download=True, transform=transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=120,
                                               shuffle=True, num_workers = 0)
 
     testset = torchvision.datasets.CIFAR10(root='./data', train=False,
                                            download=True, transform=transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=100,
+    testloader = torch.utils.data.DataLoader(testset, batch_size=120,
                                              shuffle=False, num_workers = 0)
 
     classes = ('plane', 'car', 'bird', 'cat',
@@ -128,7 +128,7 @@ def main():
             running_loss += loss.item()
             if i % 100 == 99:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 29))
+                      (epoch + 1, i + 1, running_loss / 99))
                 running_loss = 0.0
         total_acc = 0
         for i in range(10):
