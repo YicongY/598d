@@ -90,14 +90,14 @@ def main():
     net = Net()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(net.parameters(), lr = 0.00001)
-    # if torch.cuda.is_available():
-    #     print('cuda')
-    #     device = torch.device('cuda:0')
-    # else:
-    #     print(cpu)
-    #     device = torch.device('cpu')
-    # print(device)
-    # net.to(device)
+    if torch.cuda.is_available():
+        print('cuda')
+        device = torch.device('cuda:0')
+    else:
+        print('cpu')
+        device = torch.device('cpu')
+    print(device)
+    net.to(device)
     time1 = time.time()
     for epoch in range(2):  # loop over the dataset multiple times
         time2 = time.time()
@@ -107,7 +107,7 @@ def main():
         for i, data in enumerate(trainloader, 0):
             # get the inputs
             inputs, labels = data
-            #inputs, labels = inputs.to(device), labels.to(device)
+            inputs, labels = inputs.to(device), labels.to(device)
             # zero the parameter gradients
             optimizer.zero_grad()
 
