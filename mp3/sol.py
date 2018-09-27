@@ -46,7 +46,7 @@ class Net(nn.Module):
         x = self.conv3_bn(x)
         x = self.conv4(x)
         x = self.conv4_max_pol(x)
-        #x = self.conv4_dropout(x)
+        x = self.conv4_dropout(x, 0.4)
         x = self.conv5(x)
         x = self.conv5_bn(x)
         x = self.conv6(x)
@@ -55,7 +55,7 @@ class Net(nn.Module):
         x = self.conv7_bn(x)
         x = self.conv8(x)
         x = self.conv8_bn(x)
-        #x = self.conv8_dropout(x)
+        x = self.conv8_dropout(x, 0.2)
         x = x.reshape(x.size(0), -1)
         #print(x.size())
         x = self.fc1(x)
@@ -100,7 +100,7 @@ def main():
     print(device)
     net.to(device)
     time1 = time.time()
-    for epoch in range(50):  # loop over the dataset multiple times
+    for epoch in range(30):  # loop over the dataset multiple times
         time2 = time.time()
         class_correct = list(0. for i in range(10))
         class_total = list(0. for i in range(10))
