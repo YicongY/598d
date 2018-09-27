@@ -89,7 +89,7 @@ def main():
 
     net = Net()
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(net.parameters(), lr = 0.00001)
+    optimizer = optim.Adam(net.parameters(), lr = 0.0001)
     if torch.cuda.is_available():
         print('cuda')
         device = torch.device('cuda:0')
@@ -125,7 +125,7 @@ def main():
 
             # print statistics
             running_loss += loss.item()
-            if i % 30 == 29:  # print every 2000 mini-batches
+            if i % 100 == 99:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / 29))
                 running_loss = 0.0
