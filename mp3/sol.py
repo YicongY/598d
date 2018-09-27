@@ -105,6 +105,12 @@ def main():
         class_correct = list(0. for i in range(10))
         class_total = list(0. for i in range(10))
         running_loss = 0.0
+        if (epoch > 6):
+            for group in optimizer.param_groups:
+                for p in group['params']:
+                    state = optimizer.state[p]
+                    if ('step' in state and state['step'] >= 1024):
+                        state['step'] = 1000
         for i, data in enumerate(trainloader, 0):
             # get the inputs
             inputs, labels = data
