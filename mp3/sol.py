@@ -13,23 +13,23 @@ class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(3, 64, 4, 1, 2)
-        self.conv1_bn = nn.BatchNorm2d(64)
+        self.conv1_bn = nn.BatchNorm2d(1024)
         self.conv2 = nn.Conv2d(64, 64, 4, 1, 2)
         self.conv2_max_pol = nn.MaxPool2d(2, 2)
         self.conv2_dropout = nn.Dropout()
         self.conv3 = nn.Conv2d(64, 64, 4, 1, 2)
-        self.conv3_bn = nn.BatchNorm2d(64)
+        self.conv3_bn = nn.BatchNorm2d(1024)
         self.conv4 = nn.Conv2d(64, 64, 4, 1, 2)
         self.conv4_max_pol = nn.MaxPool2d(2, 2)
         self.conv4_dropout = nn.Dropout()
         self.conv5 = nn.Conv2d(64, 64, 4, 1, 2)
-        self.conv5_bn = nn.BatchNorm2d(64)
+        self.conv5_bn = nn.BatchNorm2d(1024)
         self.conv6 = nn.Conv2d(64, 64, 3, 1, 0)
         self.conv6_dropout = nn.Dropout()
         self.conv7 = nn.Conv2d(64, 64, 3, 1, 0)
         self.conv7_bn = nn.BatchNorm2d(64)
         self.conv8 = nn.Conv2d(64, 64, 3, 1, 0)
-        self.conv8_bn = nn.BatchNorm2d(64)
+        self.conv8_bn = nn.BatchNorm2d(1024)
         self.conv8_dropout = nn.Dropout()
         self.fc1 = nn.Linear(1024, 500)
         self.fc2 = nn.Linear(500, 500)
@@ -77,12 +77,12 @@ def main():
 
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                             download=True, transform=transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=120,
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
                                               shuffle=True, num_workers = 0)
 
     testset = torchvision.datasets.CIFAR10(root='./data', train=False,
                                            download=True, transform=transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=120,
+    testloader = torch.utils.data.DataLoader(testset, batch_size=100,
                                              shuffle=False, num_workers = 0)
 
     classes = ('plane', 'car', 'bird', 'cat',
@@ -116,7 +116,7 @@ def main():
             outputs = net(inputs)
             _, predicted = torch.max(outputs, 1)
             c = (predicted == labels).squeeze()
-            for j in range(120):
+            for j in range(100):
                 label = labels[j]
                 class_correct[label] += c[j].item()
                 class_total[label] += 1
