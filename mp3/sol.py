@@ -99,7 +99,7 @@ def main():
     print(device)
     net.to(device)
     time1 = time.time()
-    for epoch in range(2):  # loop over the dataset multiple times
+    for epoch in range(40):  # loop over the dataset multiple times
         time2 = time.time()
         class_correct = list(0. for i in range(10))
         class_total = list(0. for i in range(10))
