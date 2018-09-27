@@ -90,7 +90,7 @@ def main():
 
     net = Net()
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(net.parameters(), lr = 0.001)
+    optimizer = optim.Adam(net.parameters(), lr = 0.0001)
     if torch.cuda.is_available():
         print('cuda')
         device = torch.device('cuda:0')
@@ -136,7 +136,7 @@ def main():
                 classes[i], 100 * class_correct[i] / class_total[i]))
             total_acc += 100 * class_correct[i] / class_total[i]
         print("average acc: ", total_acc/10)
-        print('One time: ', time.time()- time2)
+        print('One time: ', time.time() - time2)
     print('Total time: ', time.time() -time1)
 
     print('Finished Training')
