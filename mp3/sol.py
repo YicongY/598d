@@ -100,7 +100,7 @@ def main():
     print(device)
     net.to(device)
     time1 = time.time()
-    for epoch in range(40):  # loop over the dataset multiple times
+    for epoch in range(50):  # loop over the dataset multiple times
         time2 = time.time()
         class_correct = list(0. for i in range(10))
         class_total = list(0. for i in range(10))
@@ -116,7 +116,7 @@ def main():
             outputs = net(inputs)
             _, predicted = torch.max(outputs, 1)
             c = (predicted == labels).squeeze()
-            for j in range(100):
+            for j in range(120):
                 label = labels[j]
                 class_correct[label] += c[j].item()
                 class_total[label] += 1
