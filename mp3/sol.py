@@ -139,5 +139,42 @@ def main():
     print('Total time: ', time.time() -time1)
 
     print('Finished Training')
+    print('Start Testing')
+    time3 = time.time()
+    class_correct = list(0. for i in range(10))
+    class_total = list(0. for i in range(10))
+    running_loss = 0.0
+    for i, data in enumerate(testloader, 0):
+        # get the inputs
+        inputs, labels = data
+        inputs, labels = inputs.to(device), labels.to(device)
+        # zero the parameter gradients
+        optimizer.zero_grad()
+
+        # forward + backward + optimize
+        outputs = net(inputs)
+        _, predicted = torch.max(outputs, 1)
+        c = (predicted == labels).squeeze()
+        for j in range(100):
+            label = labels[j]
+            class_correct[label] += c[j].item()
+            class_total[label] += 1
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+
+        # print statistics
+        running_loss += loss.item()
+        if i % 30 == 29:  # print every 2000 mini-batches
+            print('[%d, %5d] loss: %.3f' %
+                  (epoch + 1, i + 1, running_loss / 29))
+            running_loss = 0.0
+    total_acc = 0
+    for i in range(10):
+        print('Accuracy of %5s : %2d %%' % (
+            classes[i], 100 * class_correct[i] / class_total[i]))
+        total_acc += 100 * class_correct[i] / class_total[i]
+    print("average acc of testing: ", total_acc/10)
+    print('One time: ', time.time()- time3)
 
 main()
