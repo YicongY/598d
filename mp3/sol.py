@@ -71,6 +71,8 @@ class Net(nn.Module):
 def main():
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
+        transforms.RandomVerticalFlip(),
+        transforms.RandomRotation(20),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
