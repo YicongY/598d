@@ -101,7 +101,7 @@ def main():
     net.to(device)
     time1 = time.time()
     net.train()
-    for epoch in range(5):  # loop over the dataset multiple times
+    for epoch in range(60):  # loop over the dataset multiple times
         time2 = time.time()
         class_correct = list(0. for i in range(10))
         class_total = list(0. for i in range(10))
