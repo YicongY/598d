@@ -48,7 +48,7 @@ class Net(nn.Module):
         x = self.conv4_max_pol(F.relu(x))
         #x = self.conv4_dropout(x)
         x = self.conv5(x)
-        x = self.conv5_bn(F.relu((x))
+        x = self.conv5_bn(F.relu(x))
         x = self.conv6(x)
         x = self.conv6_dropout(F.relu(x))
         x = self.conv7(x)
