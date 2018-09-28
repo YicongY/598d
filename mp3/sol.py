@@ -100,6 +100,7 @@ def main():
     print(device)
     net.to(device)
     time1 = time.time()
+    net.train()
     for epoch in range(30):  # loop over the dataset multiple times
         time2 = time.time()
         class_correct = list(0. for i in range(10))
@@ -151,12 +152,13 @@ def main():
     class_correct = list(0. for i in range(10))
     class_total = list(0. for i in range(10))
     running_loss = 0.0
+    net.eval()
     for i, data in enumerate(testloader, 0):
         # get the inputs
         inputs, labels = data
         inputs, labels = inputs.to(device), labels.to(device)
         # zero the parameter gradients
-        optimizer.zero_grad()
+       # optimizer.zero_grad()
 
         # forward + backward + optimize
         outputs = net(inputs)
@@ -166,16 +168,16 @@ def main():
             label = labels[j]
             class_correct[label] += c[j].item()
             class_total[label] += 1
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
+        # loss = criterion(outputs, labels)
+        # loss.backward()
+        # optimizer.step()
 
         # print statistics
-        running_loss += loss.item()
-        if i % 30 == 29:  # print every 2000 mini-batches
-            print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, i + 1, running_loss / 29))
-            running_loss = 0.0
+        #running_loss += loss.item()
+        # if i % 30 == 29:  # print every 2000 mini-batches
+        #     print('[%d, %5d] loss: %.3f' %
+        #           (epoch + 1, i + 1, running_loss / 29))
+        #     running_loss = 0.0
     total_acc = 0
     for i in range(10):
         print('Accuracy of %5s : %2d %%' % (
