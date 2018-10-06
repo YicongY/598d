@@ -51,7 +51,7 @@ class ResNet(nn.Module):
         if stride != 1:
             downsample_net = nn.Sequential(nn.Conv2d(self.inputplane, out_layers, kernel_size=1, stride=stride, bias=False), nn.BatchNorm2d(out_layers),nn.BatchNorm2d(self.inputplane),)
         block = []
-        block.append(B_Block(self.inputplane, out_layers, 1, stride, 1, downsample_net))
+        block.append(B_Block(self.inputplane, out_layers, 3, stride, 1, downsample_net))
         self.inputplane = out_layers
         for i in range(1, num_layer):
             block.append(B_Block(self.inputplane, out_layers))
