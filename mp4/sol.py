@@ -41,15 +41,15 @@ class ResNet(nn.Module):
         self.bb2 = self.block_layer(64, 4, 2)
         self.bb3 = self.block_layer(128, 4, 2)
         self.bb4 = self.block_layer(256, 2, 2)
-        self.max_pol = nn.MaxPool2d(8, 8)
-        self.fc = nn.Linear(256,100)
+        self.max_pol = nn.MaxPool2d(3, 3)
+        self.fc = nn.Linear(256, 100)
 
 
 
     def block_layer(self, out_layers, num_layer, stride):
         downsample_net = None
         if stride != 1:
-            downsample_net = nn.Sequential(nn.Conv2d(self.inputplane, out_layers, kernel_size=1, stride=stride, bias=False), nn.BatchNorm2d(out_layers),nn.BatchNorm2d(self.inputplane),)
+            downsample_net = nn.Sequential(nn.Conv2d(self.inputplane, out_layers, kernel_size=1, stride=stride, bias=False), nn.BatchNorm2d(out_layers),)
         block = []
         block.append(B_Block(self.inputplane, out_layers, 3, stride, 1, downsample_net))
         self.inputplane = out_layers
@@ -67,6 +67,7 @@ class ResNet(nn.Module):
         x = self.bb3(x)
         x = self.bb4(x)
         x = self.max_pol(x)
+        x = x.view(x.size(0), -1)
         x = self.fc(x)
         return x
 
