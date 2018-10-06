@@ -21,7 +21,7 @@ class B_Block(nn.Module):
         out = F.relu(out)
         out = self.conv2(out)
         out = self.conv2_bn(out)
-        if downsample_net:
+        if self.downsample_net:
             x = self.downsample_net(x)
         out = x + out
 
