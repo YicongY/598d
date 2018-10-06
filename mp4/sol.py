@@ -109,7 +109,7 @@ def main():
         class_correct = list(0. for i in range(100))
         class_total = list(0. for i in range(100))
         running_loss = 0.0
-        if epoch % 10 == 0:
+        if epoch >= 5 and epoch % 5 == 0:
             test(testloader, net, device)
         if (epoch > 6):
             for group in optimizer.param_groups:
