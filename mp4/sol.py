@@ -174,7 +174,7 @@ def test(testloader, net,device):
         outputs = net(inputs)
         _, predicted = torch.max(outputs, 1)
         c = (predicted == labels).squeeze()
-        for j in range(100):
+        for j in range(len(labels)):
             label = labels[j]
             class_correct[label] += c[j].item()
             class_total[label] += 1
