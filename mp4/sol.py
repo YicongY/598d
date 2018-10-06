@@ -42,8 +42,8 @@ class ResNet(nn.Module):
         self.bb3 = self.block_layer(128, 4, 2)
         self.bb4 = self.block_layer(256, 2, 2)
         self.max_pol = nn.MaxPool2d(4, 1)
-        self.fc = nn.Linear(1024, 512)
-        self.fc1 = nn.Linear(512, 256)
+        self.fc = nn.Linear(256, 128)
+        self.fc1 = nn.Linear(128, 100)
         self.fc2 = nn.Linear(256, 100)
 
 
@@ -72,7 +72,8 @@ class ResNet(nn.Module):
         x = x.view(x.size(0), -1)
         #x = self.fc(x)
         #x = self.fc1(F.relu(x))
-        x = self.fc2(x)
+        x = self.fc(x)
+        x = self.fc1(F.relu(x))
         return x
 
 
@@ -96,7 +97,7 @@ def main():
 
     net = ResNet()
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(net.parameters(), lr = 0.00001)
+    optimizer = optim.Adam(net.parameters(), lr = 0.0001)
     if torch.cuda.is_available():
         print('cuda')
         device = torch.device('cuda:0')
