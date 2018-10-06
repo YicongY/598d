@@ -80,6 +80,7 @@ class ResNet(nn.Module):
 def main():
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
+         transforms.RandomCrop(32),
          transforms.RandomRotation(25),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
@@ -97,7 +98,7 @@ def main():
 
     net = ResNet()
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(net.parameters(), lr = 0.0001)
+    optimizer = optim.Adam(net.parameters(), lr = 0.0002)
     if torch.cuda.is_available():
         print('cuda')
         device = torch.device('cuda:0')
