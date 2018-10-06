@@ -96,7 +96,7 @@ def main():
 
     net = ResNet()
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(net.parameters(), lr = 0.0001)
+    optimizer = optim.Adam(net.parameters(), lr = 0.00001)
     if torch.cuda.is_available():
         print('cuda')
         device = torch.device('cuda:0')
