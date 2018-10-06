@@ -150,7 +150,7 @@ def main():
     print('Finished Training')
     print('Start Testing')
     ####testing###########
-    test(testloader, ResNet)
+    test(testloader, net)
 
 def test(testloader, net):
     time3 = time.time()
