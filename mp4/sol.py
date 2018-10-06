@@ -6,62 +6,68 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
-class Net(nn.Module):
-    def __init__(self):
-        super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 64, 4, 1, 2)
-        self.conv1_bn = nn.BatchNorm2d(64)
-        self.conv2 = nn.Conv2d(64, 64, 4, 1, 2)
-        self.conv2_max_pol = nn.MaxPool2d(2, 2)
-        self.conv2_dropout = nn.Dropout(0.1)
-        self.conv3 = nn.Conv2d(64, 64, 4, 1, 2)
-        self.conv3_bn = nn.BatchNorm2d(64)
-        self.conv4 = nn.Conv2d(64, 64, 4, 1, 2)
-        self.conv4_max_pol = nn.MaxPool2d(2, 2)
-        self.conv4_dropout = nn.Dropout(0.1)
-        self.conv5 = nn.Conv2d(64, 64, 4, 1, 2)
-        self.conv5_bn = nn.BatchNorm2d(64)
-        self.conv6 = nn.Conv2d(64, 64, 3, 1, 0)
-        self.conv6_dropout = nn.Dropout(0.2)
-        self.conv7 = nn.Conv2d(64, 64, 3, 1, 0)
-        self.conv7_bn = nn.BatchNorm2d(64)
-        self.conv8 = nn.Conv2d(64, 64, 3, 1, 0)
-        self.conv8_bn = nn.BatchNorm2d(64)
-        self.conv8_dropout = nn.Dropout(0.3)
-        self.fc1 = nn.Linear(1024, 500)
-        self.fc2 = nn.Linear(500, 500)
-        self.fc3 = nn.Linear(500, 10)
+class B_Block(nn,Module):
+    def __init__(self, inlayer, outlayer, filter_size = 1, first_stride = 1, padding = 1, downsample_net = None):
+        super(B_Block, self).__init__()
+        self.conv1 = nn.Conv2d(inlayer, outlayer, filter_size, first_stride, padding)
+        self.conv1_bn = nn.BatchNorm2d(outlayer)
+        self.conv2 = nn.Conv2d(outlayer, outlayer, filter_size, 1, padding)
+        self.conv2_bn = nn.BatchNorm2d(outlayer)
+        self.downsample_net = downsample_net
 
+    def forward(self,x):
+        out = self.conv1(x)
+        out = self.conv1_bn(out)
+        out = F.relu(out)
+        out = self.conv2(out)
+        out = self.conv2_bn(out)
+        if downsample_net:
+            x = self.downsample_net(x)
+        out = x + out
+
+        return out
+
+
+
+
+class ResNet(nn.Module):
+    def __init__(self):
+        super(ResNet, self).__init__()
+        self.inputplane = 32
+        self.conv1 = nn.Conv2d(3, 32, 3, 1, 1)
+        self.conv1_bn = nn.BatchNorm2d(32)
+        self.conv1_dropout = nn.Dropout(0.3)
+        self.bb1 = block_layer(32, 2, 1)
+        self.bb2 = block_layer(64, 4, 2)
+        self.bb3 = block_layer(128, 4, 2)
+        self.bb4 = block_layer(256, 2, 2)
+        self.max_pol = nn.MaxPool2d(8, 8)
+        self.fc = nn.Linear(256,100)
+
+
+
+    def block_layer(self, out_layers, num_layer, stride):
+        downsample_net = None
+        if stride != 1:
+            downsample_net = nn.Sequential(nn.Conv2d(self.inputplane, out_layers, kernel_size=1, stride=stride, bias=False), nn.BatchNorm2d(out_layers),nn.BatchNorm2d(self.inputplane),)
+        block = []
+        block.append(B_Block(self.inputplane, out_layers, 1, stride, 1, downsample_net))
+        self.inputplane = out_layers
+        for i in range(1, num_layer):
+            block.append(B_Block(self.inputplane, out_layers))
+        return nn.Sequential(*block)
 
     def forward(self,x):
         x = self.conv1(x)
-        x = self.conv1_bn(F.relu(x))
-        x = self.conv2(x)
-        x = self.conv2_max_pol(F.relu(x))
-        #x = self.conv2_dropout(x)
-        x = self.conv3(x)
-        x = self.conv3_bn(F.relu(x))
-        x = self.conv4(x)
-        x = self.conv4_max_pol(F.relu(x))
-        #x = self.conv4_dropout(x)
-        x = self.conv5(x)
-        x = self.conv5_bn(F.relu(x))
-        x = self.conv6(x)
-        x = self.conv6_dropout(F.relu(x))
-        x = self.conv7(x)
-        x = self.conv7_bn(F.relu(x))
-        x = self.conv8(x)
-        x = self.conv8_bn(F.relu(x))
-        x = self.conv8_dropout(x)
-        x = x.reshape(x.size(0), -1)
-        #print(x.size())
-        x = self.fc1(x)
-        #print(x.size())
-        #x = self.fc2(x)
-        #print(x.size())
-        x = self.fc3(F.relu(x))
-        #x = F.softmax(x)
-        #print(x.size())
+        x = self.conv1_bn(x)
+        x = F.relu(x)
+        x = self.conv1_dropout(x)
+        x = self.bb1(x)
+        x = self.bb2(x)
+        x = self.bb3(x)
+        x = self.bb4(x)
+        x = self.max_pol(x)
+        x = self.fc(x)
         return x
 
 
@@ -72,20 +78,18 @@ def main():
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-    trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
+    trainset = torchvision.datasets.CIFAR100(root='./data', train=True,
                                             download=True, transform=transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
                                               shuffle=True, num_workers = 0)
 
-    testset = torchvision.datasets.CIFAR10(root='./data', train=False,
+    testset = torchvision.datasets.CIFAR100(root='./data', train=False,
                                            download=True, transform=transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size=100,
                                              shuffle=False, num_workers = 0)
 
-    classes = ('plane', 'car', 'bird', 'cat',
-               'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-    net = Net()
+    net = ResNet()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(net.parameters(), lr = 0.0001)
     if torch.cuda.is_available():
@@ -98,11 +102,13 @@ def main():
     net.to(device)
     time1 = time.time()
     net.train()
-    for epoch in range(60):  # loop over the dataset multiple times
+    for epoch in range(70):  # loop over the dataset multiple times
         time2 = time.time()
-        class_correct = list(0. for i in range(10))
-        class_total = list(0. for i in range(10))
+        class_correct = list(0. for i in range(100))
+        class_total = list(0. for i in range(100))
         running_loss = 0.0
+        if epoch % 10 == 0:
+            test(testloader, ResNet)
         if (epoch > 6):
             for group in optimizer.param_groups:
                 for p in group['params']:
@@ -117,7 +123,7 @@ def main():
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = net(inputs)
+            outputs = ResNet(inputs)
             _, predicted = torch.max(outputs, 1)
             c = (predicted == labels).squeeze()
             for j in range(100):
@@ -135,20 +141,21 @@ def main():
                       (epoch + 1, i + 1, running_loss / 99))
                 running_loss = 0.0
         total_acc = 0
-        for i in range(10):
-            print('Accuracy of %5s : %2d %%' % (
-                classes[i], 100 * class_correct[i] / class_total[i]))
+        for i in range(100):
             total_acc += 100 * class_correct[i] / class_total[i]
-        print("average acc: ", total_acc/10)
+        print("average acc: ", total_acc/100)
         print('One time: ', time.time() - time2)
     print('Total time: ', time.time() -time1)
 
     print('Finished Training')
     print('Start Testing')
+    ####testing###########
+    test(testloader, ResNet)
+
+def test(testloader, net):
     time3 = time.time()
-    class_correct = list(0. for i in range(10))
-    class_total = list(0. for i in range(10))
-    running_loss = 0.0
+    class_correct = list(0. for i in range(100))
+    class_total = list(0. for i in range(100))
     net.eval()
     for i, data in enumerate(testloader, 0):
         # get the inputs
@@ -176,11 +183,9 @@ def main():
         #           (epoch + 1, i + 1, running_loss / 29))
         #     running_loss = 0.0
     total_acc = 0
-    for i in range(10):
-        print('Accuracy of %5s : %2d %%' % (
-            classes[i], 100 * class_correct[i] / class_total[i]))
+    for i in range(100):
         total_acc += 100 * class_correct[i] / class_total[i]
-    print("average acc of testing: ", total_acc/10)
+    print("average acc of testing: ", total_acc/100)
     print('One time: ', time.time()- time3)
 
 main()
