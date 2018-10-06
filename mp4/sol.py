@@ -125,7 +125,7 @@ def main():
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = ResNet(inputs)
+            outputs = net(inputs)
             _, predicted = torch.max(outputs, 1)
             c = (predicted == labels).squeeze()
             for j in range(100):
