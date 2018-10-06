@@ -7,7 +7,7 @@ import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
 class B_Block(nn.Module):
-    def __init__(self, inlayer, outlayer, filter_size = 1, first_stride = 1, padding = 1, downsample_net = None):
+    def __init__(self, inlayer, outlayer, filter_size = 3, first_stride = 1, padding = 1, downsample_net = None):
         super(B_Block, self).__init__()
         self.conv1 = nn.Conv2d(inlayer, outlayer, filter_size, first_stride, padding)
         self.conv1_bn = nn.BatchNorm2d(outlayer)
