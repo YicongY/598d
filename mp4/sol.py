@@ -109,7 +109,7 @@ def main():
         class_total = list(0. for i in range(100))
         running_loss = 0.0
         if epoch % 10 == 0:
-            test(testloader, net)
+            test(testloader, net, device)
         if (epoch > 6):
             for group in optimizer.param_groups:
                 for p in group['params']:
@@ -151,9 +151,9 @@ def main():
     print('Finished Training')
     print('Start Testing')
     ####testing###########
-    test(testloader, net)
+    test(testloader, net, device)
 
-def test(testloader, net):
+def test(testloader, net,device):
     time3 = time.time()
     class_correct = list(0. for i in range(100))
     class_total = list(0. for i in range(100))
