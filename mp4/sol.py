@@ -132,7 +132,7 @@ def main():
             outputs = net(inputs)
             _, predicted = torch.max(outputs, 1)
             c = (predicted == labels).squeeze()
-            for j in range(100):
+            for j in range(len(labels)):
                 label = labels[j]
                 class_correct[label] += c[j].item()
                 class_total[label] += 1
@@ -142,7 +142,7 @@ def main():
 
             # print statistics
             running_loss += loss.item()
-            if i % 100 == 99:  # print every 2000 mini-batches
+            if i % 31 == 0:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / 99))
                 running_loss = 0.0
