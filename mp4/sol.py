@@ -73,7 +73,7 @@ class ResNet(nn.Module):
         #x = self.fc(x)
         #x = self.fc1(F.relu(x))
         x = self.fc2(x)
-        return F.relu(x)
+        return x
 
 
 def main():
@@ -85,12 +85,12 @@ def main():
 
     trainset = torchvision.datasets.CIFAR100(root='./data', train=True,
                                             download=True, transform=transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=32,
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
                                               shuffle=True, num_workers = 0)
 
     testset = torchvision.datasets.CIFAR100(root='./data', train=False,
                                            download=True, transform=transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=32,
+    testloader = torch.utils.data.DataLoader(testset, batch_size=100,
                                              shuffle=False, num_workers = 0)
 
 
