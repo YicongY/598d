@@ -103,12 +103,13 @@ def main():
     time1 = time.time()
     net.train()
     for epoch in range(70):  # loop over the dataset multiple times
+        net.train()
         time2 = time.time()
         class_correct = list(0. for i in range(100))
         class_total = list(0. for i in range(100))
         running_loss = 0.0
         if epoch % 10 == 0:
-            test(testloader, ResNet)
+            test(testloader, net)
         if (epoch > 6):
             for group in optimizer.param_groups:
                 for p in group['params']:
