@@ -36,7 +36,7 @@ class ResNet(nn.Module):
         self.inputplane = 32
         self.conv1 = nn.Conv2d(3, 32, 3, 1, 1)
         self.conv1_bn = nn.BatchNorm2d(32)
-        self.conv1_dropout = nn.Dropout(0.3)
+        self.conv1_dropout = nn.Dropout(0.4)
         self.bb1 = self.block_layer(32, 2, 1)
         self.bb2 = self.block_layer(64, 4, 2)
         self.bb3 = self.block_layer(128, 4, 2)
@@ -73,7 +73,7 @@ class ResNet(nn.Module):
         x = self.fc(x)
         x = self.fc1(F.relu(x))
         x = self.fc2(F.relu(x))
-        return x
+        return F.relu(x)
 
 
 def main():
@@ -85,12 +85,12 @@ def main():
 
     trainset = torchvision.datasets.CIFAR100(root='./data', train=True,
                                             download=True, transform=transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=32,
                                               shuffle=True, num_workers = 0)
 
     testset = torchvision.datasets.CIFAR100(root='./data', train=False,
                                            download=True, transform=transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=100,
+    testloader = torch.utils.data.DataLoader(testset, batch_size=32,
                                              shuffle=False, num_workers = 0)
 
 
