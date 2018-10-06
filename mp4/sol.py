@@ -17,18 +17,18 @@ class B_Block(nn.Module):
 
     def forward(self,x):
         out = self.conv1(x)
+
+        if self.downsample_net:
+            x = self.downsample_net(x)
+
         out = self.conv1_bn(out)
         out = F.relu(out)
         out = self.conv2(out)
         out = self.conv2_bn(out)
-        if self.downsample_net:
-            x = self.downsample_net(x)
+
         out = x + out
 
         return out
-
-
-
 
 class ResNet(nn.Module):
     def __init__(self):
@@ -36,7 +36,7 @@ class ResNet(nn.Module):
         self.inputplane = 32
         self.conv1 = nn.Conv2d(3, 32, 3, 1, 1)
         self.conv1_bn = nn.BatchNorm2d(32)
-        self.conv1_dropout = nn.Dropout(0.4)
+        self.conv1_dropout = nn.Dropout(0.5)
         self.bb1 = self.block_layer(32, 2, 1)
         self.bb2 = self.block_layer(64, 4, 2)
         self.bb3 = self.block_layer(128, 4, 2)
@@ -80,7 +80,7 @@ class ResNet(nn.Module):
 def main():
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
-         transforms.RandomRotation(20),
+         transforms.RandomRotation(25),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
@@ -143,14 +143,14 @@ def main():
 
             # print statistics
             running_loss += loss.item()
-            if i % 300 == 0 :  # print every 2000 mini-batches
+            if i % 100 == 99 :  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / 99))
                 running_loss = 0.0
         total_acc = 0
         for i in range(100):
             total_acc += 100 * class_correct[i] / class_total[i]
-        print("average acc: ", total_acc/100)
+        print("average trainning acc: ", total_acc/100)
         print('One time: ', time.time() - time2)
     print('Total time: ', time.time() -time1)
 
