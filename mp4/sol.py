@@ -41,7 +41,7 @@ class ResNet(nn.Module):
         self.bb2 = self.block_layer(64, 4, 2)
         self.bb3 = self.block_layer(128, 4, 2)
         self.bb4 = self.block_layer(256, 2, 2)
-        self.max_pol = nn.MaxPool2d(3, 3)
+        self.max_pol = nn.MaxPool2d(2, 2)
         self.fc = nn.Linear(256, 100)
 
 
