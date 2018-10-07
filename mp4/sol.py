@@ -17,7 +17,6 @@ class B_Block(nn.Module):
 
     def forward(self,x):
         out = self.conv1(x)
-
         if self.downsample_net:
             x = self.downsample_net(x)
         print(x.shape, 'xshape')
@@ -26,9 +25,9 @@ class B_Block(nn.Module):
         out = F.relu(out)
         out = self.conv2(out)
         out = self.conv2_bn(out)
-
-        out = x + out
         print(out.shape,'outshape')
+        out = x + out
+
         return out
 
 class ResNet(nn.Module):
