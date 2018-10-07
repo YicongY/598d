@@ -36,7 +36,7 @@ class ResNet(nn.Module):
         self.inputplane = 32
         self.conv1 = nn.Conv2d(3, 32, 3, 1, 1)
         self.conv1_bn = nn.BatchNorm2d(32)
-        self.conv1_dropout = nn.Dropout(0.5)
+        self.conv1_dropout = nn.Dropout(0.6)
         self.bb1 = self.block_layer(32, 2, 1)
         self.bb2 = self.block_layer(64, 4, 2)
         self.bb3 = self.block_layer(128, 4, 2)
@@ -81,7 +81,7 @@ def main():
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
          transforms.RandomCrop(32),
-         transforms.RandomRotation(25),
+         transforms.RandomRotation(30),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
@@ -98,7 +98,7 @@ def main():
 
     net = ResNet()
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(net.parameters(), lr = 0.0002)
+    optimizer = optim.Adam(net.parameters(), lr = 0.00015)
     if torch.cuda.is_available():
         print('cuda')
         device = torch.device('cuda:0')
