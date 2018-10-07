@@ -51,7 +51,7 @@ class ResNet(nn.Module):
     def block_layer(self, out_layers, num_layer, stride):
         downsample_net = None
         if stride != 1:
-            downsample_net = nn.Sequential(nn.Conv2d(self.inputplane, out_layers, kernel_size=1, stride=stride, bias=False), nn.BatchNorm2d(out_layers),)
+            downsample_net = nn.Sequential(nn.Conv2d(self.inputplane, out_layers, kernel_size=3, stride=stride, bias=False), nn.BatchNorm2d(out_layers),)
         block = []
         block.append(B_Block(self.inputplane, out_layers, 3, stride, 1, downsample_net))
         self.inputplane = out_layers
