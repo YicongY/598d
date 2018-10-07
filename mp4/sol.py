@@ -20,6 +20,7 @@ class B_Block(nn.Module):
 
         if self.downsample_net:
             x = self.downsample_net(x)
+        print(x.shape, 'xshape')
 
         out = self.conv1_bn(out)
         out = F.relu(out)
@@ -27,7 +28,7 @@ class B_Block(nn.Module):
         out = self.conv2_bn(out)
 
         out = x + out
-
+        print(out.shape,'outshape')
         return out
 
 class ResNet(nn.Module):
@@ -51,7 +52,7 @@ class ResNet(nn.Module):
     def block_layer(self, out_layers, num_layer, stride):
         downsample_net = None
         if stride != 1:
-            downsample_net = nn.Sequential(nn.Conv2d(self.inputplane, out_layers, kernel_size=3, stride=stride, bias=False), nn.BatchNorm2d(out_layers),)
+            downsample_net = nn.Sequential(nn.Conv2d(self.inputplane, out_layers, kernel_size=1, stride=stride, bias=False), nn.BatchNorm2d(out_layers),)
         block = []
         block.append(B_Block(self.inputplane, out_layers, 3, stride, 1, downsample_net))
         self.inputplane = out_layers
