@@ -19,13 +19,11 @@ class B_Block(nn.Module):
         out = self.conv1(x)
         if self.downsample_net:
             x = self.downsample_net(x)
-        print(x.shape, 'xshape')
 
         out = self.conv1_bn(out)
         out = F.relu(out)
         out = self.conv2(out)
         out = self.conv2_bn(out)
-        print(out.shape,'outshape')
         out = x + out
 
         return out
