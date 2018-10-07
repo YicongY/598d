@@ -80,8 +80,7 @@ class ResNet(nn.Module):
 def main():
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
-         transforms.RandomVerticalFlip(),
-         transforms.RandomCrop(32),
+         #transforms.RandomCrop(32),
          transforms.RandomRotation(25),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
