@@ -213,4 +213,4 @@ def test(testloader, net,device):
     print("average acc of testing: ", total_acc/100)
     print('One time: ', time.time()- time3)
 
-main(True)
+main(False)
