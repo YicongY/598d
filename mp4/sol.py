@@ -36,7 +36,7 @@ class ResNet(nn.Module):
         self.inputplane = 32
         self.conv1 = nn.Conv2d(3, 32, 3, 1, 1)
         self.conv1_bn = nn.BatchNorm2d(32)
-        self.conv1_dropout = nn.Dropout(0.5)
+        self.conv1_dropout = nn.Dropout(0.2)
         self.bb1 = self.block_layer(32, 2, 1)
         self.bb2 = self.block_layer(64, 4, 2)
         self.bb3 = self.block_layer(128, 4, 2)
@@ -82,7 +82,7 @@ def main(pretrain):
 
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
-        # transforms.RandomCrop(32),
+         transforms.RandomCrop(32,4),
          transforms.RandomRotation(20),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
@@ -94,7 +94,7 @@ def main(pretrain):
         transform = transforms.Compose(
         [transforms.Resize((224,224)),
          transforms.RandomHorizontalFlip(),
-         #transforms.RandomCrop(224),
+         transforms.RandomCrop(224, 4),
          transforms.RandomRotation(20),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
@@ -104,18 +104,18 @@ def main(pretrain):
 
     trainset = torchvision.datasets.CIFAR100(root='./data', train=True,
                                             download=True, transform=transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=128,
                                               shuffle=True, num_workers = 0)
 
     testset = torchvision.datasets.CIFAR100(root='./data', train=False,
                                            download=True, transform=transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=100,
+    testloader = torch.utils.data.DataLoader(testset, batch_size=128,
                                              shuffle=False, num_workers = 0)
 
 
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(net.parameters(), lr = 0.0001)
+    optimizer = optim.Adam(net.parameters(), lr = 0.001)
     if torch.cuda.is_available():
         print('cuda')
         device = torch.device('cuda:0')
