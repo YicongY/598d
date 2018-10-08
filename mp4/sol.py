@@ -91,7 +91,7 @@ def main(pretrain):
         net = t_models.resnet18(pretrained = True)
         num_inp = net.fc.in_features
         net.fc = nn.Linear(num_inp, 100)
-        transform = [transforms.Resize(228,288)] +transform
+        transform = [transforms.Compose(Resize(228,228))] + transform
     else:
         net = ResNet()
 
