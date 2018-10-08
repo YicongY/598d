@@ -92,7 +92,7 @@ def main(pretrain):
         num_inp = net.fc.in_features
         net.fc = nn.Linear(num_inp, 100)
         transform = transforms.Compose(
-        [transforms.Resize(224,224)
+        [transforms.Resize(224,224),
          transforms.RandomHorizontalFlip(),
          #transforms.RandomCrop(32),
          transforms.RandomRotation(20),
