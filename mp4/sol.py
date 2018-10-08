@@ -41,7 +41,7 @@ class ResNet(nn.Module):
         self.bb2 = self.block_layer(64, 4, 2)
         self.bb3 = self.block_layer(128, 4, 2)
         self.bb4 = self.block_layer(256, 2, 2)
-        self.max_pol = nn.AvgPool2d(4, 1)
+        self.max_pol = nn.MaxPool2d(4, 1)
         self.fc = nn.Linear(256, 128)
         self.fc1 = nn.Linear(128, 100)
         self.fc2 = nn.Linear(256, 100)
@@ -82,7 +82,7 @@ def main(pretrain):
 
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
-         transforms.RandomCrop(32),
+        # transforms.RandomCrop(32),
          transforms.RandomRotation(20),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
@@ -94,7 +94,7 @@ def main(pretrain):
         transform = transforms.Compose(
         [transforms.Resize((224,224)),
          transforms.RandomHorizontalFlip(),
-         transforms.RandomCrop(224),
+         #transforms.RandomCrop(224),
          transforms.RandomRotation(20),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
