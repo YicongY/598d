@@ -94,7 +94,7 @@ def main(pretrain):
         transform = transforms.Compose(
         [transforms.Resize((224,224)),
          transforms.RandomHorizontalFlip(),
-         transforms.RandomCrop(32),
+         transforms.RandomCrop(224),
          transforms.RandomRotation(20),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
