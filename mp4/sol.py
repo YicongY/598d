@@ -92,7 +92,7 @@ def main(pretrain):
         num_inp = net.fc.in_features
         net.fc = nn.Linear(num_inp, 100)
         transform = transforms.Compose(
-        [transforms.Resize(224,224),
+        [transforms.Resize((224,224)),
          transforms.RandomHorizontalFlip(),
          #transforms.RandomCrop(32),
          transforms.RandomRotation(20),
@@ -100,9 +100,6 @@ def main(pretrain):
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     else:
         net = ResNet()
-
-
-
 
 
     trainset = torchvision.datasets.CIFAR100(root='./data', train=True,
@@ -129,7 +126,7 @@ def main(pretrain):
     net.to(device)
     time1 = time.time()
     net.train()
-    for epoch in range(70):  # loop over the dataset multiple times
+    for epoch in range(100):  # loop over the dataset multiple times
         net.train()
         time2 = time.time()
         class_correct = list(0. for i in range(100))
