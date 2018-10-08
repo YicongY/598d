@@ -6,6 +6,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
+from torchvision import models as t_models
 class B_Block(nn.Module):
     def __init__(self, inlayer, outlayer, filter_size = 3, first_stride = 1, padding = 1, downsample_net = None):
         super(B_Block, self).__init__()
@@ -27,6 +28,7 @@ class B_Block(nn.Module):
         out = x + out
 
         return out
+
 
 class ResNet(nn.Module):
     def __init__(self):
@@ -57,6 +59,7 @@ class ResNet(nn.Module):
             block.append(B_Block(self.inputplane, out_layers))
         return nn.Sequential(*block)
 
+
     def forward(self,x):
         x = self.conv1(x)
         x = self.conv1_bn(x)
@@ -75,13 +78,26 @@ class ResNet(nn.Module):
         return x
 
 
-def main():
+def main(pretrain):
+
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
          #transforms.RandomCrop(32),
          transforms.RandomRotation(20),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+
+    if pretrain == True:
+        net = t_models.resnet18(pretrained = True)
+        num_inp = net.fc.in_features
+        net.fc = nn.Linear(num_inp, 100)
+        transform = [transforms.Resize(228,288)] +transform
+    else:
+        net = ResNet()
+
+
+
+
 
     trainset = torchvision.datasets.CIFAR100(root='./data', train=True,
                                             download=True, transform=transform)
@@ -94,7 +110,7 @@ def main():
                                              shuffle=False, num_workers = 0)
 
 
-    net = ResNet()
+
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(net.parameters(), lr = 0.0001)
     if torch.cuda.is_available():
@@ -194,4 +210,4 @@ def test(testloader, net,device):
     print("average acc of testing: ", total_acc/100)
     print('One time: ', time.time()- time3)
 
-main()
+main(True)
