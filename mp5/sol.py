@@ -110,7 +110,8 @@ class TripleDataset(Dataset):
             negative_image = Image.open(negative_image_path).convert('RGB')
             sample = {'positive_image': positive_image, 'query_image': query_image, 'negative_image' : negative_image}
             if self.transform:
-                sample = self.transform(sample)
+                for i,v in sample.items():
+                    sample[i] = self.transform(v)
             return sample, self.triplelist[idx]
         else:
             query_image_path = root_dir + self.triplelist[idx]
