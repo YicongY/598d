@@ -223,7 +223,7 @@ def main(pretrain):
         trainloader = torch.utils.data.DataLoader(trainset, batch_size=128,
                                                   shuffle=True, num_workers=8)
         image_dict = LimitedSizeDict(size_limit= 5000)
-        print(len(image_dict))
+
         time2 = time.time()
         running_loss = 0.0
         train_embedding = []
@@ -236,7 +236,10 @@ def main(pretrain):
                         state['step'] = 1000
         for i, data in enumerate(trainloader, 0):
             # get the inputs
+            print(len(image_dict))
             data_i , label = data
+            print(data_i)
+            print(label)
             positive_image = data_i['positive_image']
             query_image = data_i['query_image']
             negative_image =data_i['negative_image']
