@@ -265,7 +265,7 @@ def main(pretrain):
             else:
                 negative_output =  net(negative_image)
                 image_dict[label[2]] = negative_output
-            if (epoch + 1) >= 5 and （epoch + 1）% 5 == 0 :
+            if (epoch + 1) >= 5 and (epoch + 1)% 5 == 0 :
                 train_image_name.append(label[0])
                 train_embedding.append(query_output)
 
