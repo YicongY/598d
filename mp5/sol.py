@@ -102,7 +102,7 @@ class TripleDataset(Dataset):
             subdir = label
             query_image_path = self.root_dir + '/'+ subdir + '/' + self.triplelist[idx][0]
             positive_image_path = self.root_dir + '/'+ subdir + '/' + self.triplelist[idx][1]
-            negative_label = triplelist[idx][2].split('_')[0]
+            negative_label = self.triplelist[idx][2].split('_')[0]
             subdir = negative_label
             negative_image_path = self.root_dir + '/'+ subdir + '/' + self.triplelist[idx][2]
             positive_image = Image.open(positive_image_path).convert('RGB')
