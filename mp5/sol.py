@@ -238,8 +238,7 @@ def main(pretrain):
             # get the inputs
             print(len(image_dict))
             data_i , label = data
-            print(data_i)
-            print(label)
+
             positive_image = data_i['positive_image']
             query_image = data_i['query_image']
             negative_image =data_i['negative_image']
@@ -254,17 +253,21 @@ def main(pretrain):
             positive_output = None
             negative_output = None
             if label[0] in image_dict:
+                print("hit0")
                 query_output = image_dict[label[0]]
             else:
                 query_output = net(query_image)
                 image_dict[label[0]] = query_output
+
             if label[1] in image_dict:
+                print("hit1")
                 positive_output = image_dict[label[1]]
             else:
                 positive_output = net(positive_image)
                 image_dict[label[1]] = positive_output
 
             if label[2] in image_dict:
+                print("hit2")
                 negative_output = image_dict[label[2]]
             else:
                 negative_output =  net(negative_image)
