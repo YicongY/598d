@@ -238,8 +238,6 @@ def main(pretrain):
             # get the inputs
             #print(len(image_dict))
             data_i , label = data
-            if i in [1,2,3]:
-                print(label,'\n')
             positive_image = data_i['positive_image']
             query_image = data_i['query_image']
             negative_image =data_i['negative_image']
@@ -284,9 +282,9 @@ def main(pretrain):
 
             # print statistics
             running_loss += loss.item()
-            if i % 20000 == 19999 :  # print every 2000 mini-batches
+            if i % 100 == 0 :  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 99))
+                      (epoch + 1, i + 1, running_loss / 100))
         print('One time: ', time.time() - time2)
 
         if (epoch + 1) >= 5 and (epoch+1) % 5 == 0:
@@ -344,4 +342,4 @@ def test(net,device, embedding_array,train_image_name):
     print("average acc of testing: ", total_acc/100)
     print('One time: ', time.time()- time3)
 
-main(False)
+main(True)
