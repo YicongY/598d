@@ -236,7 +236,7 @@ def main(pretrain):
                         state['step'] = 1000
         for i, data in enumerate(trainloader, 0):
             # get the inputs
-            print(len(image_dict))
+            #print(len(image_dict))
             data_i , label = data
             print(label)
             positive_image = data_i['positive_image']
