@@ -238,7 +238,7 @@ def main(pretrain):
             # get the inputs
             #print(len(image_dict))
             data_i , label = data
-            print(label)
+            print(label + '\n')
             positive_image = data_i['positive_image']
             query_image = data_i['query_image']
             negative_image =data_i['negative_image']
