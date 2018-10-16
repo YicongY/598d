@@ -220,7 +220,7 @@ def main(pretrain):
         net.train()
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
         trainset = TripleDataset(triplelist = pickle_file,root_dir = 'data/tiny-imagenet-200/train', train = 1, transform = transform)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size = 64,
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size = 32,
                                                   shuffle=True, num_workers=8)
         #mage_dict = LimitedSizeDict(size_limit= 5000)
 
@@ -308,7 +308,7 @@ def test(net,device, embedding_array,train_image_name):
     net.eval()
     testset = TripleDataset(triple_list = pickle_file, root_dir = 'data/tiny-imagenet-200/val/images', train = 0,
                              transform = transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=64,shuffle=True, num_workers=8)
+    testloader = torch.utils.data.DataLoader(testset, batch_size= 32,shuffle=True, num_workers=8)
     labels_list = []
     labels_list = pickle.load(open("testlist_label.pkl", 'rb'))
     total_acc = 0
