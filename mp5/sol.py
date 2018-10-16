@@ -220,9 +220,9 @@ def main(pretrain):
         net.train()
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
         trainset = TripleDataset(triplelist = pickle_file,root_dir = 'data/tiny-imagenet-200/train', train = 1, transform = transform)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size=128,
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size = 128,
                                                   shuffle=True, num_workers=8)
-        image_dict = LimitedSizeDict(size_limit= 5000)
+        #mage_dict = LimitedSizeDict(size_limit= 5000)
 
         time2 = time.time()
         running_loss = 0.0
@@ -252,26 +252,27 @@ def main(pretrain):
             query_output = None
             positive_output = None
             negative_output = None
-            if label[0] in image_dict:
-                print("hit0")
-                query_output = image_dict[label[0]]
-            else:
-                query_output = net(query_image)
-                image_dict[label[0]] = query_output
+            # if label[0] in image_dict:
+            #     print("hit0")
+            #     query_output = image_dict[label[0]]
+            # else:
+            query_output = net(query_image)
+                # image_dict[label[0]] = query_output
 
-            if label[1] in image_dict:
-                print("hit1")
-                positive_output = image_dict[label[1]]
-            else:
-                positive_output = net(positive_image)
-                image_dict[label[1]] = positive_output
+            # if label[1] in image_dict:
+            #     print("hit1")
+            #     positive_output = image_dict[label[1]]
+            # else:
+            positive_output = net(positive_image)
+                # image_dict[label[1]] = positive_output
 
-            if label[2] in image_dict:
-                print("hit2")
-                negative_output = image_dict[label[2]]
-            else:
-                negative_output =  net(negative_image)
-                image_dict[label[2]] = negative_output
+            # if label[2] in image_dict:
+            #     print("hit2")
+            #     negative_output = image_dict[label[2]]
+            # else:
+            negative_output =  net(negative_image)
+                # image_dict[label[2]] = negative_output
+
             if (epoch + 1) >= 5 and (epoch + 1)% 5 == 0 :
                 train_image_name.append(label[0])
                 train_embedding.append(query_output)
