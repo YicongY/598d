@@ -222,7 +222,7 @@ def main(pretrain):
         trainset = TripleDataset(triplelist = pickle_file,root_dir = 'data/tiny-imagenet-200/train', train = 1, transform = transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size=128,
                                                   shuffle=True, num_workers=32)
-        image_dict = LimitedSizeDict(size_limit= 50000)
+        image_dict = LimitedSizeDict(size_limit= 10000)
         time2 = time.time()
         running_loss = 0.0
         train_embedding = []
@@ -265,8 +265,9 @@ def main(pretrain):
             else:
                 negative_output =  net(negative_image)
                 image_dict[label[2]] = negative_output
-            train_image_name.append(label[0])
-            train_embedding.append(query_output)
+            if (epoch + 1) >= 5 and （epoch + 1）% 5 == 0 :
+                train_image_name.append(label[0])
+                train_embedding.append(query_output)
 
             loss = criterion(query_output, positive_output, negative_output)
             loss.backward()
