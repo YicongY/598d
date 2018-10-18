@@ -213,8 +213,23 @@ def main(pretrain):
     for child in net.children():
         print(" child", child_counter, "is:")
         print(child)
-        child_counter += 1
+        if child_counter != 7:
+            for param in child.parameters():
+                param.requires_grad = False
+                print("child",child_counter,"was frozen")
+        elif child_counter == 7:
+            children_of_child_counter = 0
+            for children_of_child in child.children():
+                if children_of_child_counter == 0:
+                    for param in children_of_child.parameters():
+                        param.requires_grad = False
+                        print('child ', children_of_child_counter, 'of child', child_counter, ' was frozen')
 
+                    param.requires_grad = False
+
+
+
+        child_counter += 1
 
     criterion = nn.TripletMarginLoss()
     optimizer = optim.Adam(net.parameters(), lr = 0.001)
@@ -230,7 +245,7 @@ def main(pretrain):
     for epoch in range(40):  # loop over the dataset multiple times
         net.train()
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
-        trainset = TripleDataset(triplelist = pickle_file,root_dir = 'data/tiny-imagenet-200/train', train = 1, transform = transform)
+        trainset = TripleDataset(triplelist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size = 32,
                                                   shuffle=True, num_workers=32)
         #mage_dict = LimitedSizeDict(size_limit= 5000)
@@ -320,7 +335,7 @@ def main(pretrain):
 def test(net,device, embedding_array,train_image_name):
     time3 = time.time()
     net.eval()
-    testset = TripleDataset(triple_list = pickle_file, root_dir = 'data/tiny-imagenet-200/val/images', train = 0,
+    testset = TripleDataset(triple_list = pickle_file, root_dir = 'tiny-imagenet-200/val/images', train = 0,
                              transform = transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size= 32,shuffle=True, num_workers=8)
     labels_list = []
