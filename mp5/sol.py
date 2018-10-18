@@ -252,7 +252,7 @@ def main(pretrain,argv):
 
         trainset = TripleDataset(triplelist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size = batch_size,
-                                                  shuffle=True, num_workers=10)
+                                                  shuffle=True, num_workers = 32)
         #mage_dict = LimitedSizeDict(size_limit= 5000)
 
         time2 = time.time()
