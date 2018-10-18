@@ -211,9 +211,7 @@ def main(pretrain):
     #freeze parameters
     child_counter = 0
     for child in net.children():
-        print(" child", child_counter, "is:")
-        print(child)
-        if child_counter != 7:
+        if child_counter not in  [7,8,9]:
             for param in child.parameters():
                 param.requires_grad = False
             print("child",child_counter,"was frozen")
@@ -241,11 +239,14 @@ def main(pretrain):
     for epoch in range(40):  # loop over the dataset multiple times
         net.train()
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
+        time_load_data = time.time()
+        print("begin to load data")
         trainset = TripleDataset(triplelist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size = 32,
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size = 10,
                                                   shuffle=True, num_workers=32)
         #mage_dict = LimitedSizeDict(size_limit= 5000)
-
+        print(time.time()-time_load_data)
+        print("finish load data")
         time2 = time.time()
         running_loss = 0.0
         train_embedding = None
@@ -309,7 +310,7 @@ def main(pretrain):
             if i % 100 == 0 :  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / i))
-            progress_bar(i %100,100000/32 )
+            progress_bar(i %100,100000/100 )
         print('One time: ', time.time() - time2)
 
         if (epoch + 1) >= 2 and (epoch+1) % 2 == 0:
