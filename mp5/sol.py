@@ -90,7 +90,7 @@ def choicelist(number, end):
     return ret
 
 class TripleDataset(Dataset):
-    def __init__(self, triplelist, root_dir,train, transform=None):
+    def __init__(self,triplelist, root_dir,train, transform=None):
         self.triplelist = pickle.load(open(triplelist,'rb'))
         self.root_dir = root_dir
         self.transform = transform
@@ -259,7 +259,7 @@ def main(pretrain,argv):
         net.train()
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
 
-        trainset = TripleDataset(triplelist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
+        trainset = TripleDataset(triplist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size = batch_size,
                                                   shuffle=True, num_workers = 32)
         time2 = time.time()
@@ -337,10 +337,7 @@ def main(pretrain,argv):
 
 def test(net,device, embedding_array,train_image_name):
     transform = transforms.Compose(
-        [transforms.RandomHorizontalFlip(),
-         transforms.RandomCrop(32, 4),
-         transforms.RandomRotation(20),
-         transforms.ToTensor(),
+        [transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
     embedding_array = np.load(embedding_array)
@@ -350,7 +347,7 @@ def test(net,device, embedding_array,train_image_name):
     print(len(train_image_name))
     time3 = time.time()
     net.eval()
-    testset = TripleDataset(triple_list = "testlist.pkl", root_dir = 'tiny-imagenet-200/val/images', train = 0,
+    testset = TripleDataset(triplelist = 'testlist.pkl', root_dir = 'tiny-imagenet-200/val/images', train = 0,
                              transform = transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 32)
     labels_list = []
