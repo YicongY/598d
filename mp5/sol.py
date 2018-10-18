@@ -192,7 +192,7 @@ def main(pretrain):
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
     if pretrain == True:
-        net = t_models.resnet101(pretrained = True)
+        net = t_models.resnet18(pretrained = True)
         num_inp = net.fc.in_features
         net.fc = nn.Linear(num_inp, embedding_size)
         transform = transforms.Compose(
@@ -288,12 +288,12 @@ def main(pretrain):
 
             # print statistics
             running_loss += loss.item()
-            if i % 10000 == 9999:  # print every 2000 mini-batches
+            if i % 1000 == 999:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 9999))
+                      (epoch + 1, i + 1, running_loss / 999))
                 running_loss = 0.0
                 #progress_bar(i/10 ,10000)
-                print('1000 batch time: ', time.time() - time2)
+                print('100 batch time: ', time.time() - time2)
 
         if (epoch + 1) >= 2 and (epoch+1) % 2 == 0:
             np.asanyarray(train_embedding)
