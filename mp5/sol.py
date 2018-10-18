@@ -290,7 +290,8 @@ def main(pretrain):
             positive_output = net(positive_image)
             negative_output =  net(negative_image)
             if (epoch + 1) >= 2 and (epoch + 1)% 2 == 0 :
-                train_image_name.append(label[0])
+                for each_label in label:
+                    train_image_name.append(each_label[0])
                 train_embedding.append(query_output)
             loss = criterion(query_output, positive_output, negative_output)
             loss.backward()
@@ -304,13 +305,15 @@ def main(pretrain):
                 running_loss = 0.0
                 #progress_bar(i/10 ,10000)
                 print('100 batch time: ', time.time() - time2)
-
-        if (epoch + 1) >= 2 and (epoch+1) % 2 == 0:
+        torch.save(net.state_dict(), "model.pt")
+        if (epoch + 1) >= 1 and (epoch + 1) % 1 == 0:
             np.asanyarray(train_embedding)
             with open('embedding.pkl', 'wb') as f:
                 np.save(f, train_embedding)
-            #test(net, device,train_embedding, train_image_name)
-        torch.save(net.state_dict(),"model.pt")
+            with open('train_image_name.pkl', 'wb') as f:
+                pickle.dump(train_image_name, f)
+            test(net, device,'embedding.pkl', 'train_image_name.pkl')
+
 
 
     print('Total time: ', time.time() -time1)
@@ -322,6 +325,11 @@ def main(pretrain):
     #test(net, device, train_embedding, train_image_name)
 
 def test(net,device, embedding_array,train_image_name):
+    embedding_array = np.load(embedding_array)
+    embedding_array = embedding_array.flatten()
+    print(embedding_array.shape)
+    train_image_name = pickle.load(open(train_image_name, 'rb'))
+    print(len(train_image_name))
     time3 = time.time()
     net.eval()
     testset = TripleDataset(triple_list = pickle_file, root_dir = 'tiny-imagenet-200/val/images', train = 0,
@@ -329,7 +337,10 @@ def test(net,device, embedding_array,train_image_name):
     testloader = torch.utils.data.DataLoader(testset, batch_size= 32,shuffle=True, num_workers=8)
     labels_list = []
     labels_list = pickle.load(open("testlist_label.pkl", 'rb'))
+    #tree_array = np.vstack((outputs, embedding_array))
+    tree = spatial.KDTree(embedding_array)
     total_acc = 0
+    train_image_name_counter = 0
     for i, data in enumerate(testloader, 0):
         # get the inputs
         accuracy = 0
@@ -339,23 +350,19 @@ def test(net,device, embedding_array,train_image_name):
         inputs, labels = inputs.to(device), labels.to(device)
         # zero the parameter gradients
        # optimizer.zero_grad()
-
         # forward + backward + optimize
         outputs = net(inputs)
-
-
-        tree_array =  np.vstack((outputs, embedding_array))
-
-
-        tree = spatial.KDTree(tree_array)
         dis, index = tree.query(outputs, k =30 )
 
         true_label = label_list[i]
         counter = 0
-        for i in index:
-            train_label = train_image_name.split('_')[0]
-            if train_label == true_label:
-                counter +=1
+        for ind, group in enumerate(index):
+            for gourp_ind, image in enumerate(group):
+                train_image_name_counter += 1
+                train_label = train_image_name[image].split('_')[0]
+                if train_label == true_label:
+                    counter +=1
+        print(train_image_name_counter)
         accuracy = counter/30
         total_acc += accuracy
 
