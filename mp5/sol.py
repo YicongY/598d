@@ -216,19 +216,15 @@ def main(pretrain):
         if child_counter != 7:
             for param in child.parameters():
                 param.requires_grad = False
-                print("child",child_counter,"was frozen")
+            print("child",child_counter,"was frozen")
         elif child_counter == 7:
             children_of_child_counter = 0
             for children_of_child in child.children():
                 if children_of_child_counter == 0:
                     for param in children_of_child.parameters():
                         param.requires_grad = False
-                        print('child ', children_of_child_counter, 'of child', child_counter, ' was frozen')
-
-                    param.requires_grad = False
-
-
-
+                    print('child ', children_of_child_counter, 'of child', child_counter, ' was frozen')
+                children_of_child_counter += 1
         child_counter += 1
 
     criterion = nn.TripletMarginLoss()
