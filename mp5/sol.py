@@ -249,7 +249,7 @@ def main(pretrain,argv):
     print(device)
     net.to(device)
     time1 = time.time()
-    loss_file = Path("model.pt")
+    loss_file = Path("loss_list.pkl")
     if loss_file.is_file():
         loss_list = pickle.load(open('loss_list.pkl', "rb"))
 
