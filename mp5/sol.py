@@ -217,12 +217,13 @@ def main(pretrain,argv):
     model_file = Path("model.pt")
     if model_file.is_file():
         net.load_state_dict(torch.load("model.pt"))
+        print("load previous model parameters")
 
     #freeze parameters
     child_counter = 0
     for child in net.children():
-        print(child_counter)
-        print(child)
+        # print(child_counter)
+        # print(child)
         if child_counter not in  [7,8,9]:
             for param in child.parameters():
                 param.requires_grad = False
@@ -248,15 +249,14 @@ def main(pretrain,argv):
     print(device)
     net.to(device)
     time1 = time.time()
-    for epoch in range(40):  # loop over the dataset multiple times
+    loss_list = []
+    for epoch in range(50):
         net.train()
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
 
         trainset = TripleDataset(triplelist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size = batch_size,
                                                   shuffle=True, num_workers = 32)
-        #mage_dict = LimitedSizeDict(size_limit= 5000)
-
         time2 = time.time()
         running_loss = 0.0
         train_embedding = None
@@ -269,11 +269,9 @@ def main(pretrain,argv):
                     state = optimizer.state[p]
                     if ('step' in state and state['step'] >= 1024):
                         state['step'] = 1000
-        bar_counter = 0
         for i, data in enumerate(trainloader, 0):
             # get the inputs
             #print(len(image_dict))
-            bar_counter = i
             data_i , label = data
             positive_image = data_i['positive_image']
             query_image = data_i['query_image']
@@ -301,13 +299,17 @@ def main(pretrain,argv):
 
             # print statistics
             running_loss += loss.item()
-            if i % 1000 == 999:  # print every 2000 mini-batches
+            if i % 64 == 63:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 999))
+                      (epoch + 1, i + 1, running_loss / 64))
                 running_loss = 0.0
 
                 print('100 batch time: ', time.time() - time2)
             progress_bar(i,len(trainloader))
+        loss = running_loss/(100000/3)
+        loss_list.append(loss)
+        print("Epoch loss: ", loss)
+
         torch.save(net.state_dict(), "model.pt")
         if (epoch + 1) >= 1 and (epoch + 1) % 1 == 0:
             np.asanyarray(train_embedding)
@@ -317,7 +319,8 @@ def main(pretrain,argv):
                 pickle.dump(train_image_name, f)
             test(net, device,'embedding.pkl', 'train_image_name.pkl')
 
-
+        with open('loss_list.pkl', 'wb') as f:
+            pickle.dump(loss_list, f)
 
     print('Total time: ', time.time() -time1)
 
@@ -335,11 +338,11 @@ def test(net,device, embedding_array,train_image_name):
     print(len(train_image_name))
     time3 = time.time()
     net.eval()
-    testset = TripleDataset(triple_list = pickle_file, root_dir = 'tiny-imagenet-200/val/images', train = 0,
+    testset = TripleDataset(triple_list = "testlist.pkl", root_dir = 'tiny-imagenet-200/val/images', train = 0,
                              transform = transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size= 32,shuffle=True, num_workers=8)
     labels_list = []
-    labels_list = pickle.load(open("testlist_label.pkl", 'rb'))
+    label_list = pickle.load(open("testlist_label.pkl", 'rb'))
     #tree_array = np.vstack((outputs, embedding_array))
     tree = spatial.KDTree(embedding_array)
     total_acc = 0
@@ -372,4 +375,4 @@ def test(net,device, embedding_array,train_image_name):
     print("average acc of testing: ", total_acc/100)
     print('One time: ', time.time()- time3)
 
-main(True,sys.argv[1:])
+#main(True,sys.argv[1:])
