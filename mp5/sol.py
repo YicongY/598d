@@ -192,7 +192,7 @@ def main(pretrain,argv):
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-b', "--batch_size"):
-            batch_size = arg
+            batch_size = int(arg)
     print(batch_size)
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
