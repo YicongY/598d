@@ -221,6 +221,8 @@ def main(pretrain,argv):
     #freeze parameters
     child_counter = 0
     for child in net.children():
+        print(child_counter)
+        print(child)
         if child_counter not in  [7,8,9]:
             for param in child.parameters():
                 param.requires_grad = False
