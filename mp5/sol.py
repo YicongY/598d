@@ -183,7 +183,7 @@ class LimitedSizeDict(OrderedDict):
         self.popitem(last=False)
 #Hyper parameters
 embedding_size =4096
-def main(pretrain):
+def main(pretrain,argv):
     batch_size = 0
     try:
         opts,args = getopt.getopt(argv, "hb", ["batch_size="])
@@ -369,4 +369,4 @@ def test(net,device, embedding_array,train_image_name):
     print("average acc of testing: ", total_acc/100)
     print('One time: ', time.time()- time3)
 
-main(True)
+main(True,sys.argv[1:])
