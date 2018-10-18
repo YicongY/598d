@@ -249,7 +249,11 @@ def main(pretrain,argv):
     print(device)
     net.to(device)
     time1 = time.time()
-    loss_list = pickle.load(open('loss_list.pkl',"rb"))
+    loss_file = Path("model.pt")
+    if loss_file.is_file():
+        loss_list = pickle.load(open('loss_list.pkl', "rb"))
+
+        print("load loss list, epoch:" ,len(loss_list))
     for epoch in range(50):
         net.train()
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
@@ -337,7 +341,7 @@ def test(net,device, embedding_array,train_image_name):
          transforms.RandomRotation(20),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-    
+
     embedding_array = np.load(embedding_array)
     embedding_array = embedding_array.flatten()
     print(embedding_array.shape)
