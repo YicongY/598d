@@ -303,8 +303,9 @@ def main(pretrain,argv):
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / 999))
                 running_loss = 0.0
-                #progress_bar(i/10 ,10000)
+
                 print('100 batch time: ', time.time() - time2)
+            progress_bar(i,len(trainloader))
         torch.save(net.state_dict(), "model.pt")
         if (epoch + 1) >= 1 and (epoch + 1) % 1 == 0:
             np.asanyarray(train_embedding)
