@@ -190,7 +190,7 @@ def main(pretrain,argv):
     except getopt.GetoptError:
         print('test.py -batchsize')
         sys.exit(2)
-    for opt. arg in opts:
+    for opt, arg in opts:
         if opt in ('-b', "--batch_size"):
             batch_size = arg
     print(batch_size)
