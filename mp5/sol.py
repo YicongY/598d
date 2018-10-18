@@ -257,9 +257,11 @@ def main(pretrain):
                     state = optimizer.state[p]
                     if ('step' in state and state['step'] >= 1024):
                         state['step'] = 1000
+        bar_counter = 0
         for i, data in enumerate(trainloader, 0):
             # get the inputs
             #print(len(image_dict))
+            bar_counter = i
             data_i , label = data
             positive_image = data_i['positive_image']
             query_image = data_i['query_image']
@@ -286,10 +288,11 @@ def main(pretrain):
 
             # print statistics
             running_loss += loss.item()
-            if i % 10 == 0 and i != 0 :  # print every 2000 mini-batches
+            if i % 10 == 9:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / i))
-            progress_bar(i %10,100000/10 )
+                      (epoch + 1, i + 1, running_loss / 9))
+                running_loss = 0.0
+                progress_bar(i/10 ,10000)
         print('One time: ', time.time() - time2)
 
         if (epoch + 1) >= 2 and (epoch+1) % 2 == 0:
