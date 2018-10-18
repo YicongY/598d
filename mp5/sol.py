@@ -241,8 +241,8 @@ def main(pretrain):
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
 
         trainset = TripleDataset(triplelist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size = 4,
-                                                  shuffle=True, num_workers=32)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size = 8,
+                                                  shuffle=True, num_workers=8)
         #mage_dict = LimitedSizeDict(size_limit= 5000)
 
         time2 = time.time()
