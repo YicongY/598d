@@ -14,6 +14,7 @@ import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
 from PIL import Image
+import sys, getopt
 from torchvision import models as t_models
 class B_Block(nn.Module):
     def __init__(self, inlayer, outlayer, filter_size = 3, first_stride = 1, padding = 1, downsample_net = None):
@@ -183,7 +184,16 @@ class LimitedSizeDict(OrderedDict):
 #Hyper parameters
 embedding_size =4096
 def main(pretrain):
-
+    batch_size = 0
+    try:
+        opts,args = getopt.getopt(argv, "hb", ["batch_size="])
+    except getopt.GetoptError:
+        print('test.py -batchsize')
+        sys.exit(2)
+    for opt. arg in opts:
+        if opt in ('-b', "--batch_size"):
+            batch_size = arg
+    print(batch_size)
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
          transforms.RandomCrop(32,4),
@@ -241,7 +251,7 @@ def main(pretrain):
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
 
         trainset = TripleDataset(triplelist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size = 10,
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size = batch_size,
                                                   shuffle=True, num_workers=10)
         #mage_dict = LimitedSizeDict(size_limit= 5000)
 
