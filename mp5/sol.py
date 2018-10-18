@@ -259,7 +259,7 @@ def main(pretrain,argv):
         net.train()
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
 
-        trainset = TripleDataset(triplist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
+        trainset = TripleDataset(triplelist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size = batch_size,
                                                   shuffle=True, num_workers = 32)
         time2 = time.time()
