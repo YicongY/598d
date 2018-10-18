@@ -276,31 +276,12 @@ def main(pretrain):
             query_output = None
             positive_output = None
             negative_output = None
-            # if label[0] in image_dict:
-            #     print("hit0")
-            #     query_output = image_dict[label[0]]
-            # else:
             query_output = net(query_image)
-                # image_dict[label[0]] = query_output
-
-            # if label[1] in image_dict:
-            #     print("hit1")
-            #     positive_output = image_dict[label[1]]
-            # else:
             positive_output = net(positive_image)
-                # image_dict[label[1]] = positive_output
-
-            # if label[2] in image_dict:
-            #     print("hit2")
-            #     negative_output = image_dict[label[2]]
-            # else:
             negative_output =  net(negative_image)
-                # image_dict[label[2]] = negative_output
-
-            if (epoch + 1) >= 5 and (epoch + 1)% 5 == 0 :
+            if (epoch + 1) >= 2 and (epoch + 1)% 2 == 0 :
                 train_image_name.append(label[0])
                 train_embedding.append(query_output)
-
             loss = criterion(query_output, positive_output, negative_output)
             loss.backward()
             optimizer.step()
