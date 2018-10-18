@@ -288,12 +288,12 @@ def main(pretrain):
 
             # print statistics
             running_loss += loss.item()
-            if i % 10 == 9:  # print every 2000 mini-batches
+            if i % 10000 == 9999:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 9))
+                      (epoch + 1, i + 1, running_loss / 9999))
                 running_loss = 0.0
-                progress_bar(i/10 ,10000)
-        print('One time: ', time.time() - time2)
+                #progress_bar(i/10 ,10000)
+                print('1000 batch time: ', time.time() - time2)
 
         if (epoch + 1) >= 2 and (epoch+1) % 2 == 0:
             np.asanyarray(train_embedding)
