@@ -239,14 +239,12 @@ def main(pretrain):
     for epoch in range(40):  # loop over the dataset multiple times
         net.train()
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
-        time_load_data = time.time()
-        print("begin to load data")
+
         trainset = TripleDataset(triplelist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size = 10,
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size = 4,
                                                   shuffle=True, num_workers=32)
         #mage_dict = LimitedSizeDict(size_limit= 5000)
-        print(time.time()-time_load_data)
-        print("finish load data")
+
         time2 = time.time()
         running_loss = 0.0
         train_embedding = None
@@ -262,7 +260,11 @@ def main(pretrain):
         for i, data in enumerate(trainloader, 0):
             # get the inputs
             #print(len(image_dict))
+            time_load_data = time.time()
+            print("begin to load data")
             data_i , label = data
+            time_load_data = time.time()
+            print("begin to load data")
             positive_image = data_i['positive_image']
             query_image = data_i['query_image']
             negative_image =data_i['negative_image']
