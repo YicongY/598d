@@ -241,8 +241,8 @@ def main(pretrain):
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
 
         trainset = TripleDataset(triplelist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size = 8,
-                                                  shuffle=True, num_workers=8)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size = 10,
+                                                  shuffle=True, num_workers=10)
         #mage_dict = LimitedSizeDict(size_limit= 5000)
 
         time2 = time.time()
@@ -260,11 +260,7 @@ def main(pretrain):
         for i, data in enumerate(trainloader, 0):
             # get the inputs
             #print(len(image_dict))
-            time_load_data = time.time()
-            print("begin to load data")
             data_i , label = data
-            time_load_data = time.time()
-            print("begin to load data")
             positive_image = data_i['positive_image']
             query_image = data_i['query_image']
             negative_image =data_i['negative_image']
@@ -290,10 +286,10 @@ def main(pretrain):
 
             # print statistics
             running_loss += loss.item()
-            if i % 100 == 0 and i != 0 :  # print every 2000 mini-batches
+            if i % 10 == 0 and i != 0 :  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / i))
-            progress_bar(i %100,100000/100 )
+            progress_bar(i %10,100000/10 )
         print('One time: ', time.time() - time2)
 
         if (epoch + 1) >= 2 and (epoch+1) % 2 == 0:
