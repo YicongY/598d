@@ -303,9 +303,9 @@ def main(pretrain,argv):
 
             # print statistics
             running_loss += loss.item()
-            if i % 64 == 63:  # print every 2000 mini-batches
+            if i % 128 == 127:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 64))
+                      (epoch + 1, i + 1, running_loss / 128))
                 running_loss = 0.0
 
                 print('100 batch time: ', time.time() - time2)
