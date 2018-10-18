@@ -4,6 +4,8 @@ import torch
 import pickle
 from scipy import spatial
 import os
+from utils import progress_bar
+from pathlib import Path
 from collections import OrderedDict
 from torch.utils.data import Dataset
 import torch.nn as nn
@@ -190,7 +192,7 @@ def main(pretrain):
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
     if pretrain == True:
-        net = t_models.resnet18(pretrained = True)
+        net = t_models.resnet101(pretrained = True)
         num_inp = net.fc.in_features
         net.fc = nn.Linear(num_inp, embedding_size)
         transform = transforms.Compose(
@@ -202,9 +204,18 @@ def main(pretrain):
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     else:
         net = ResNet()
+    model_file = Path("model.pt")
+    if model_file.is_file():
+        net.load_state_dict(torch.load("model.pt"))
 
-    # testloader = torch.utils.data.DataLoader(testset, batch_size=128,
-    #                                          shuffle=False, num_workers = 32)
+    #freeze parameters
+    child_counter = 0
+    for child in model.children():
+        print(" child", child_counter, "is:")
+        print(child)
+        child_counter += 1
+
+
     criterion = nn.TripletMarginLoss()
     optimizer = optim.Adam(net.parameters(), lr = 0.001)
     if torch.cuda.is_available():
@@ -221,11 +232,13 @@ def main(pretrain):
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
         trainset = TripleDataset(triplelist = pickle_file,root_dir = 'data/tiny-imagenet-200/train', train = 1, transform = transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size = 32,
-                                                  shuffle=True, num_workers=8)
+                                                  shuffle=True, num_workers=32)
         #mage_dict = LimitedSizeDict(size_limit= 5000)
 
         time2 = time.time()
         running_loss = 0.0
+        train_embedding = None
+        train_image_name = None
         train_embedding = []
         train_image_name = []
         if (epoch > 6):
@@ -284,15 +297,16 @@ def main(pretrain):
             running_loss += loss.item()
             if i % 100 == 0 :  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 100))
+                      (epoch + 1, i + 1, running_loss / i))
+            progress_bar(i %100,100000/32 )
         print('One time: ', time.time() - time2)
 
-        if (epoch + 1) >= 5 and (epoch+1) % 5 == 0:
+        if (epoch + 1) >= 2 and (epoch+1) % 2 == 0:
             np.asanyarray(train_embedding)
             with open('embedding.pkl', 'wb') as f:
                 np.save(f, train_embedding)
-            test(net, device,train_embedding, train_image_name)
-            torch.save(net.state_dict(),"model")
+            #test(net, device,train_embedding, train_image_name)
+        torch.save(net.state_dict(),"model.pt")
 
 
     print('Total time: ', time.time() -time1)
@@ -316,6 +330,8 @@ def test(net,device, embedding_array,train_image_name):
         # get the inputs
         accuracy = 0
         inputs, labels = data
+        print(inputs.shape)
+        print(labels.shape)
         inputs, labels = inputs.to(device), labels.to(device)
         # zero the parameter gradients
        # optimizer.zero_grad()
