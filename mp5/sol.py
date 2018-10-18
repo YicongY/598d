@@ -249,6 +249,7 @@ def main(pretrain,argv):
     print(device)
     net.to(device)
     time1 = time.time()
+    loss_list = []
     loss_file = Path("loss_list.pkl")
     if loss_file.is_file():
         loss_list = pickle.load(open('loss_list.pkl', "rb"))
@@ -351,7 +352,7 @@ def test(net,device, embedding_array,train_image_name):
     net.eval()
     testset = TripleDataset(triple_list = "testlist.pkl", root_dir = 'tiny-imagenet-200/val/images', train = 0,
                              transform = transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size= 32,shuffle=True, num_workers=8)
+    testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 32)
     labels_list = []
     label_list = pickle.load(open("testlist_label.pkl", 'rb'))
     #tree_array = np.vstack((outputs, embedding_array))
@@ -369,7 +370,7 @@ def test(net,device, embedding_array,train_image_name):
        # optimizer.zero_grad()
         # forward + backward + optimize
         outputs = net(inputs)
-        dis, index = tree.query(outputs, k =30 )
+        dis, index = tree.query(outputs, k = 30)
 
         true_label = label_list[i]
         counter = 0
