@@ -300,13 +300,13 @@ def main(pretrain,argv):
             positive_output = None
             negative_output = None
             query_output = net(query_image)
-            query_c = query_output.cpu().data
+            query_c = query_output.cpu()
             del query_output
             positive_output = net(positive_image)
-            positive_c = positive_output.cpu().data
+            positive_c = positive_output.cpu()
             del positive_output
             negative_output =  net(negative_image)
-            negative_c = negative_output.cpu().data
+            negative_c = negative_output.cpu()
             del negative_output
 
 
