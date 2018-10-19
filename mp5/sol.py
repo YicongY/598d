@@ -3,6 +3,7 @@ import time
 import torch
 import pickle
 from scipy import spatial
+from sklearn.neighbors import NearestNeighbors
 import os
 from utils import progress_bar
 from pathlib import Path
@@ -118,10 +119,11 @@ class TripleDataset(Dataset):
             return sample, self.triplelist[idx]
         else:
             query_image_path = root_dir + self.triplelist[idx]
+            label_list = pickle.load(open("testlist_label.pkl", 'rb'))
             query_image = Image.open(query_image_path).convert('RGB')
             if self.transform:
                 sample = self.transform(query_image)
-            return sample, self.triplelist[idx]
+            return sample, label_list[idx]
 
 def TestGenerator():
     root = "data/tiny-imagenet-200/val/images"
@@ -214,12 +216,13 @@ def main(pretrain,argv):
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     else:
         net = ResNet()
+    #load previous model parameters
     model_file = Path("model.pt")
     if model_file.is_file():
         net.load_state_dict(torch.load("model.pt"))
         print("load previous model parameters")
 
-    #freeze parameters
+    freeze parameters
     child_counter = 0
     for child in net.children():
         # print(child_counter)
@@ -247,10 +250,12 @@ def main(pretrain,argv):
         print('cpu')
         device = torch.device('cpu')
     print(device)
+
     net.to(device)
     time1 = time.time()
     loss_list = []
-    loss_file = Path("loss_list.pkl")
+    loss_file = Path('loss_list.pkl')
+
     if loss_file.is_file():
         loss_list = pickle.load(open('loss_list.pkl', "rb"))
 
@@ -294,9 +299,8 @@ def main(pretrain,argv):
             query_output = net(query_image)
             positive_output = net(positive_image)
             negative_output =  net(negative_image)
-            if (epoch + 1) >= 2 and (epoch + 1)% 2 == 0 :
-                for each_label in label:
-                    train_image_name.append(each_label[0])
+            if (epoch + 1) >= 1 and (epoch + 1)% 1 == 0 :
+                train_image_name.append(each_label)
                 train_embedding.append(query_output)
             loss = criterion(query_output, positive_output, negative_output)
             loss.backward()
@@ -311,21 +315,21 @@ def main(pretrain,argv):
 
                 print('100 batch time: ', time.time() - time2)
             progress_bar(i,len(trainloader))
+        #save the model
         loss = running_loss/(100000/3)
         loss_list.append(loss)
         print("Epoch loss: ", loss)
-
+        with open('loss_list.pkl', 'wb') as f:
+            pickle.dump(loss_list, f)
         torch.save(net.state_dict(), "model.pt")
+
         if (epoch + 1) >= 1 and (epoch + 1) % 1 == 0:
-            np.asanyarray(train_embedding)
+            np.asarray(train_embedding)
             with open('embedding.pkl', 'wb') as f:
                 np.save(f, train_embedding)
             with open('train_image_name.pkl', 'wb') as f:
                 pickle.dump(train_image_name, f)
-            test(net, device,'embedding.pkl', 'train_image_name.pkl')
-
-        with open('loss_list.pkl', 'wb') as f:
-            pickle.dump(loss_list, f)
+            test('embedding.pkl', 'train_image_name.pkl')
 
     print('Total time: ', time.time() -time1)
 
@@ -335,13 +339,23 @@ def main(pretrain,argv):
     ####testing###########
     #test(net, device, train_embedding, train_image_name)
 
-def test(net,device, embedding_array,train_image_name):
+def test(embedding_array,train_image_name):
     transform = transforms.Compose(
         [transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+    net = t_models.resnet18(pretrained=True)
+    num_inp = net.fc.in_features
+    net.fc = nn.Linear(num_inp, embedding_size)
+    if torch.cuda.is_available():
+        print('cuda')
+        device = torch.device('cuda:0')
+    else:
+        print('cpu')
+        device = torch.device('cpu')
+
+    net.to(device)
 
     embedding_array = np.load(embedding_array)
-    embedding_array = embedding_array.flatten()
     print(embedding_array.shape)
     train_image_name = pickle.load(open(train_image_name, 'rb'))
     print(len(train_image_name))
@@ -350,10 +364,10 @@ def test(net,device, embedding_array,train_image_name):
     testset = TripleDataset(triplelist = 'testlist.pkl', root_dir = 'tiny-imagenet-200/val/images', train = 0,
                              transform = transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 32)
-    labels_list = []
-    label_list = pickle.load(open("testlist_label.pkl", 'rb'))
+    #label_list = pickle.load(open("testlist_label.pkl", 'rb'))
     #tree_array = np.vstack((outputs, embedding_array))
-    tree = spatial.KDTree(embedding_array)
+    neigh =NearestNeighbors(n_neighbors=30)
+
     total_acc = 0
     train_image_name_counter = 0
     for i, data in enumerate(testloader, 0):
@@ -363,20 +377,18 @@ def test(net,device, embedding_array,train_image_name):
         print(inputs.shape)
         print(labels.shape)
         inputs, labels = inputs.to(device), labels.to(device)
-        # zero the parameter gradients
-       # optimizer.zero_grad()
-        # forward + backward + optimize
         outputs = net(inputs)
+        neigh.fit(samples)
         dis, index = tree.query(outputs, k = 30)
-
+        for ind, group in enumerate(train_image_name):
+            for group_ind, image in enumerate(group):
+                train_image_name[ind][group_ind] = train_image_name[image].split('_')[0]
         true_label = label_list[i]
         counter = 0
         for ind, group in enumerate(index):
-            for gourp_ind, image in enumerate(group):
-                train_image_name_counter += 1
-                train_label = train_image_name[image].split('_')[0]
-                if train_label == true_label:
-                    counter +=1
+            train_image_name_counter += 32
+
+            counter = np.sum()
         print(train_image_name_counter)
         accuracy = counter/30
         total_acc += accuracy
