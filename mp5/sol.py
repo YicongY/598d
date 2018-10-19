@@ -300,7 +300,7 @@ def main(pretrain,argv):
             positive_output = net(positive_image)
             negative_output =  net(negative_image)
             if (epoch + 1) >= 1 and (epoch + 1)% 1 == 0 :
-                train_image_name.append(each_label)
+                train_image_name.append(label)
                 train_embedding.append(query_output)
             loss = criterion(query_output, positive_output, negative_output)
             loss.backward()
