@@ -300,11 +300,18 @@ def main(pretrain,argv):
             positive_output = None
             negative_output = None
             query_output = net(query_image)
+            query_c = query_output.cpu().data.numpy()
+            del query_output
             positive_output = net(positive_image)
+            positive_c = positive_output.cpu().data.numpy()
+            del positive_output
             negative_output =  net(negative_image)
+            negative_c = negative_output.cpu().data.numpy()
+            del negative_output
+
             if (epoch + 1) >= 1 and (epoch + 1)% 1 == 0 :
                 train_image_name.append(label)
-                train_embedding.append(query_output)
+                train_embedding.append(query_c)
             loss = criterion(query_output, positive_output, negative_output)
             loss.backward()
             optimizer.step()
