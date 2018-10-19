@@ -382,7 +382,7 @@ def test(embedding_array,train_image_name):
         inputs, labels = data
 
         print(len(labels))
-        inputs, labels = inputs.to(device), labels.to(device)
+        inputs = inputs.to(device)
         outputs = net(inputs)
         print(outputs.shape)
         neigh.fit(samples)
