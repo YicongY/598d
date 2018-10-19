@@ -243,7 +243,9 @@ def main(pretrain,argv):
         child_counter += 1
 
     criterion = nn.TripletMarginLoss()
-    optimizer = optim.Adam(net.parameters(), lr = 0.001)
+    #optimizer = optim.Adam(net.parameters(), lr = 0.001)
+    optimizer = optim.SGD(net.parameters(), lr = 0.001, momentum = 0.9)
+
     if torch.cuda.is_available():
         print('cuda')
         device = torch.device('cuda:0')
@@ -378,10 +380,11 @@ def test(embedding_array,train_image_name):
         # get the inputs
         accuracy = 0
         inputs, labels = data
-        print(inputs.shape)
-        print(labels.shape)
+
+        print(len(labels))
         inputs, labels = inputs.to(device), labels.to(device)
         outputs = net(inputs)
+        print(outputs.shape)
         neigh.fit(samples)
         for ind, group in enumerate(train_image_name):
             for group_ind, image in enumerate(group):
