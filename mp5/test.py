@@ -19,7 +19,7 @@ import sys, getopt
 from torchvision import models as t_models
 
 def test(embedding_array,train_image_name):
-
+    embedding_size = 4096
     transform = transforms.Compose(
         [transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
