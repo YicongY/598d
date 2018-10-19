@@ -355,7 +355,8 @@ def main(pretrain,argv):
 def test(embedding_array,train_image_name):
 
     transform = transforms.Compose(
-        [transforms.ToTensor(),
+        [transforms.Resize((224, 224)),
+         transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     net = t_models.resnet18(pretrained=True)
     num_inp = net.fc.in_features
