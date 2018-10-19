@@ -319,6 +319,7 @@ def main(pretrain,argv):
 
             # print statistics
             running_loss += loss.item()
+            print(len(label))
             if i % len(label) == len(label)-1:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / len(label)))
