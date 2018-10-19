@@ -224,23 +224,23 @@ def main(pretrain,argv):
         print("load previous model parameters")
 
     #freeze parameters
-    child_counter = 0
-    for child in net.children():
-        # print(child_counter)
-        # print(child)
-        if child_counter not in  [7,8,9]:
-            for param in child.parameters():
-                param.requires_grad = False
-            print("child",child_counter,"was frozen")
-        elif child_counter == 7:
-            children_of_child_counter = 0
-            for children_of_child in child.children():
-                if children_of_child_counter == 0:
-                    for param in children_of_child.parameters():
-                        param.requires_grad = False
-                    print('child ', children_of_child_counter, 'of child', child_counter, ' was frozen')
-                children_of_child_counter += 1
-        child_counter += 1
+    # child_counter = 0
+    # for child in net.children():
+    #     # print(child_counter)
+    #     # print(child)
+    #     if child_counter not in  [7,8,9]:
+    #         for param in child.parameters():
+    #             param.requires_grad = False
+    #         print("child",child_counter,"was frozen")
+    #     elif child_counter == 7:
+    #         children_of_child_counter = 0
+    #         for children_of_child in child.children():
+    #             if children_of_child_counter == 0:
+    #                 for param in children_of_child.parameters():
+    #                     param.requires_grad = False
+    #                 print('child ', children_of_child_counter, 'of child', child_counter, ' was frozen')
+    #             children_of_child_counter += 1
+    #     child_counter += 1
 
     criterion = nn.TripletMarginLoss()
     #optimizer = optim.Adam(net.parameters(), lr = 0.001)
@@ -402,5 +402,5 @@ def test(embedding_array,train_image_name):
     print("average acc of testing: ", total_acc/100)
     print('One time: ', time.time()- time3)
 
-#main(True,sys.argv[1:])
-test('embedding.pkl', 'train_image_name.pkl')
+main(True,sys.argv[1:])
+#test('embedding.pkl', 'train_image_name.pkl')
