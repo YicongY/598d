@@ -337,7 +337,7 @@ def main(pretrain,argv):
         print("save model")
 
         if (epoch + 1) >= 1 and (epoch + 1) % 1 == 0:
-            np.asarray(train_embedding)
+            train_embedding = np.asarray(train_embedding)
             with open('embedding.pkl', 'wb') as f:
                 np.save(f, train_embedding)
             print("output train embedding array")
