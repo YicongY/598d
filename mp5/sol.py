@@ -223,7 +223,7 @@ def main(pretrain,argv):
         net.load_state_dict(torch.load("model.pt"))
         print("load previous model parameters")
 
-    
+
     child_counter = 0
     for child in net.children():
         # print(child_counter)
@@ -313,7 +313,7 @@ def main(pretrain,argv):
             loss = criterion(query_c, positive_c, negative_c)
             if (epoch + 1) >= 1 and (epoch + 1) % 1 == 0:
                 train_image_name.append(label)
-                train_embedding.append(query_c.data().numpy())
+                train_embedding.append(query_c.numpy())
             loss.backward()
             optimizer.step()
 
