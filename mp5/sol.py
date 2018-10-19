@@ -222,7 +222,7 @@ def main(pretrain,argv):
         net.load_state_dict(torch.load("model.pt"))
         print("load previous model parameters")
 
-    freeze parameters
+    #freeze parameters
     child_counter = 0
     for child in net.children():
         # print(child_counter)
