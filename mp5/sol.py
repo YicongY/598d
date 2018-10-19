@@ -365,7 +365,7 @@ def test(embedding_array,train_image_name):
     print(len(train_image_name))
     time3 = time.time()
     net.eval()
-    testset = TripleDataset(triplelist = 'testlist.pkl', root_dir = 'tiny-imagenet-200/val/images', train = 0,
+    testset = TripleDataset(triplelist = 'testlist.pkl', root_dir = 'tiny-imagenet-200/val/images/', train = 0,
                              transform = transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 32)
     #label_list = pickle.load(open("testlist_label.pkl", 'rb'))
