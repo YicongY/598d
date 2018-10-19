@@ -56,7 +56,8 @@ class TripleDataset(Dataset):
 def test(embedding_array,train_image_name):
     embedding_size = 4096
     transform = transforms.Compose(
-        [transforms.ToTensor(),
+        [transforms.Resize((224,224)),
+         transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     net = t_models.resnet18(pretrained=True)
     num_inp = net.fc.in_features
@@ -71,7 +72,7 @@ def test(embedding_array,train_image_name):
     net.to(device)
 
     embedding_array = np.load(embedding_array)
-    print(embedding_array.shape)
+    print(embedding_array.shape, "embedding array shape")
     train_image_name = pickle.load(open(train_image_name, 'rb'))
     print(len(train_image_name))
     time3 = time.time()
