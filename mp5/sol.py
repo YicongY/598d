@@ -223,24 +223,24 @@ def main(pretrain,argv):
         net.load_state_dict(torch.load("model.pt"))
         print("load previous model parameters")
 
-    #freeze parameters
-    # child_counter = 0
-    # for child in net.children():
-    #     # print(child_counter)
-    #     # print(child)
-    #     if child_counter not in  [7,8,9]:
-    #         for param in child.parameters():
-    #             param.requires_grad = False
-    #         print("child",child_counter,"was frozen")
-    #     elif child_counter == 7:
-    #         children_of_child_counter = 0
-    #         for children_of_child in child.children():
-    #             if children_of_child_counter == 0:
-    #                 for param in children_of_child.parameters():
-    #                     param.requires_grad = False
-    #                 print('child ', children_of_child_counter, 'of child', child_counter, ' was frozen')
-    #             children_of_child_counter += 1
-    #     child_counter += 1
+    freeze parameters
+    child_counter = 0
+    for child in net.children():
+        # print(child_counter)
+        # print(child)
+        if child_counter not in  [7,8,9]:
+            for param in child.parameters():
+                param.requires_grad = False
+            print("child",child_counter,"was frozen")
+        elif child_counter == 7:
+            children_of_child_counter = 0
+            for children_of_child in child.children():
+                if children_of_child_counter == 0:
+                    for param in children_of_child.parameters():
+                        param.requires_grad = False
+                    print('child ', children_of_child_counter, 'of child', child_counter, ' was frozen')
+                children_of_child_counter += 1
+        child_counter += 1
 
     criterion = nn.TripletMarginLoss()
     #optimizer = optim.Adam(net.parameters(), lr = 0.001)
@@ -300,7 +300,7 @@ def main(pretrain,argv):
             positive_output = None
             negative_output = None
             query_output = net(query_image)
-            query_c = query_output.cpu().data
+            query_c = query_output.cpu()
             del query_output
             positive_output = net(positive_image)
             positive_c = positive_output.cpu()
@@ -309,18 +309,19 @@ def main(pretrain,argv):
             negative_c = negative_output.cpu()
             del negative_output
 
-            if (epoch + 1) >= 1 and (epoch + 1)% 1 == 0 :
-                train_image_name.append(label)
-                train_embedding.append(query_c)
+
             loss = criterion(query_c, positive_c, negative_c)
+            if (epoch + 1) >= 1 and (epoch + 1) % 1 == 0:
+                train_image_name.append(label)
+                train_embedding.append(query_c.data().numpy())
             loss.backward()
             optimizer.step()
 
             # print statistics
             running_loss += loss.item()
-            if i % 128 == 127:  # print every 2000 mini-batches
+            if i % len(label) == len(label)-1:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 128))
+                      (epoch + 1, i + 1, running_loss / len(label)))
                 running_loss = 0.0
 
                 print('100 batch time: ', time.time() - time2)
@@ -328,24 +329,23 @@ def main(pretrain,argv):
         #save the model
         loss = running_loss/(100000/3)
         loss_list.append(loss)
-        print("Epoch loss: ", loss)
         with open('loss_list.pkl', 'wb') as f:
             pickle.dump(loss_list, f)
+            print("save loss")
         torch.save(net.state_dict(), "model.pt")
+        print("save model")
 
         if (epoch + 1) >= 1 and (epoch + 1) % 1 == 0:
             np.asarray(train_embedding)
             with open('embedding.pkl', 'wb') as f:
                 np.save(f, train_embedding)
-            print("output train embedding araay")
+            print("output train embedding array")
             with open('train_image_name.pkl', 'wb') as f:
                 pickle.dump(train_image_name, f)
             print("output train_image_name")
            # test('embedding.pkl', 'train_image_name.pkl')
 
     print('Total time: ', time.time() -time1)
-
-
     print('Finished Training')
     print('Start Testing')
     ####testing###########
@@ -391,8 +391,10 @@ def test(embedding_array,train_image_name):
         print(len(labels))
         inputs = inputs.to(device)
         outputs = net(inputs)
-        print(outputs.shape)
-        neigh.fit(samples)
+        outputs_c = outputs.cpu().data.numpy()
+        del outputs
+        print(outputs_c.shape)
+        #neigh.fit()
         for ind, group in enumerate(train_image_name):
             for group_ind, image in enumerate(group):
                 train_image_name[ind][group_ind] = train_image_name[image].split('_')[0]
