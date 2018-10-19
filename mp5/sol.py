@@ -185,6 +185,7 @@ class LimitedSizeDict(OrderedDict):
         self.popitem(last=False)
 #Hyper parameters
 embedding_size =4096
+
 def main(pretrain,argv):
     batch_size = 0
     try:
