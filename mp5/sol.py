@@ -118,7 +118,7 @@ class TripleDataset(Dataset):
                     sample[i] = self.transform(v)
             return sample, self.triplelist[idx]
         else:
-            query_image_path = root_dir + self.triplelist[idx]
+            query_image_path = self.root_dir + self.triplelist[idx]
             label_list = pickle.load(open("testlist_label.pkl", 'rb'))
             query_image = Image.open(query_image_path).convert('RGB')
             if self.transform:
@@ -383,7 +383,6 @@ def test(embedding_array,train_image_name):
         inputs, labels = inputs.to(device), labels.to(device)
         outputs = net(inputs)
         neigh.fit(samples)
-        dis, index = tree.query(outputs, k = 30)
         for ind, group in enumerate(train_image_name):
             for group_ind, image in enumerate(group):
                 train_image_name[ind][group_ind] = train_image_name[image].split('_')[0]
