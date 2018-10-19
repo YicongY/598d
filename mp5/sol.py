@@ -399,5 +399,5 @@ def test(embedding_array,train_image_name):
     print("average acc of testing: ", total_acc/100)
     print('One time: ', time.time()- time3)
 
-#main(True,sys.argv[1:])
-test('embedding.pkl', 'train_image_name.pkl')
+main(True,sys.argv[1:])
+#test('embedding.pkl', 'train_image_name.pkl')
