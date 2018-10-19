@@ -327,9 +327,11 @@ def main(pretrain,argv):
             np.asarray(train_embedding)
             with open('embedding.pkl', 'wb') as f:
                 np.save(f, train_embedding)
+            print("output train embedding araay")
             with open('train_image_name.pkl', 'wb') as f:
                 pickle.dump(train_image_name, f)
-            test('embedding.pkl', 'train_image_name.pkl')
+            print("output train_image_name")
+           # test('embedding.pkl', 'train_image_name.pkl')
 
     print('Total time: ', time.time() -time1)
 
@@ -340,6 +342,7 @@ def main(pretrain,argv):
     #test(net, device, train_embedding, train_image_name)
 
 def test(embedding_array,train_image_name):
+
     transform = transforms.Compose(
         [transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
