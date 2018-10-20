@@ -247,6 +247,7 @@ def main(pretrain):
     #optimizer = optim.Adam(net.parameters(), lr = 0.001)
     optimizer = optim.SGD(net.parameters(), lr = 0.001, momentum = 0.9)
 
+    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma = 0.99)
     if torch.cuda.is_available():
         print('cuda')
         device = torch.device('cuda:0')
@@ -261,6 +262,7 @@ def main(pretrain):
     loss_file = Path('loss_list.pkl')
 
     for epoch in range(40):
+        scheduler.step()
         if loss_file.is_file():
             loss_list = pickle.load(open('loss_list.pkl', "rb"))
 
