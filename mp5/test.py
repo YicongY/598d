@@ -72,8 +72,10 @@ def test(embedding_array,train_image_name):
     net.to(device)
 
     embedding_array = np.load(embedding_array)
+    embedding_array.reshape((100000,4096))
     print(embedding_array.shape, "embedding array shape")
     train_image_name = np.load(open(train_image_name, 'rb'))
+    train_image_name.reshape((100000,-1))
     print(len(train_image_name), "image_label_length")
     time3 = time.time()
     net.eval()
