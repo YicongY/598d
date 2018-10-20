@@ -109,7 +109,7 @@ def test(embedding_array,train_image_name):
         count = np.sum(labels == test_array)
         tmp_accuracy = count/30
         accuracy += tmp_accuracy
-        progress_bar(i, len(outputs_c))
+        progress_bar(i, len(test_output))
     print("average acc of testing: ", (accuracy/100)/100000)
     print('One time: ', time.time()- time3)
 
