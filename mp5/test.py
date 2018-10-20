@@ -98,6 +98,7 @@ def test(embedding_array,train_image_name):
         for s_label in range(outputs_c.shape[0]):
             test_output.append(outputs_c[s_label])
             test_label.append(labels[s_label])
+        progress_bar(i, len(testloader))
     accuracy = 0
     neigh.fit(embedding_array, train_image_name)
 
