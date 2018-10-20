@@ -201,7 +201,7 @@ def main(pretrain,argv):
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
          transforms.RandomCrop(32,4),
-         transforms.RandomRotation(20),
+         transforms.RandomRotation(10),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
@@ -213,7 +213,7 @@ def main(pretrain,argv):
         [transforms.Resize((224,224)),
          transforms.RandomHorizontalFlip(),
          transforms.RandomCrop(224, 4),
-         transforms.RandomRotation(20),
+         transforms.RandomRotation(10),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     else:
@@ -225,23 +225,23 @@ def main(pretrain,argv):
         print("load previous model parameters")
 
 
-    child_counter = 0
-    for child in net.children():
-        # print(child_counter)
-        # print(child)
-        if child_counter not in  [7,8,9]:
-            for param in child.parameters():
-                param.requires_grad = False
-            print("child",child_counter,"was frozen")
-        elif child_counter == 7:
-            children_of_child_counter = 0
-            for children_of_child in child.children():
-                if children_of_child_counter == 0:
-                    for param in children_of_child.parameters():
-                        param.requires_grad = False
-                    print('child ', children_of_child_counter, 'of child', child_counter, ' was frozen')
-                children_of_child_counter += 1
-        child_counter += 1
+    # child_counter = 0
+    # for child in net.children():
+    #     # print(child_counter)
+    #     # print(child)
+    #     if child_counter not in  [7,8,9]:
+    #         for param in child.parameters():
+    #             param.requires_grad = False
+    #         print("child",child_counter,"was frozen")
+    #     elif child_counter == 7:
+    #         children_of_child_counter = 0
+    #         for children_of_child in child.children():
+    #             if children_of_child_counter == 0:
+    #                 for param in children_of_child.parameters():
+    #                     param.requires_grad = False
+    #                 print('child ', children_of_child_counter, 'of child', child_counter, ' was frozen')
+    #             children_of_child_counter += 1
+    #     child_counter += 1
 
     criterion = nn.TripletMarginLoss()
     #optimizer = optim.Adam(net.parameters(), lr = 0.001)
@@ -356,8 +356,9 @@ def main(pretrain,argv):
     #test(net, device, train_embedding, train_image_name)
 
 def test(embedding_array,train_image_name):
+    embedding_size = 4096
     transform = transforms.Compose(
-        [transforms.Resize((224, 224)),
+        [transforms.Resize((224,224)),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     net = t_models.resnet18(pretrained=True)
@@ -373,8 +374,8 @@ def test(embedding_array,train_image_name):
     net.to(device)
 
     embedding_array = np.load(embedding_array)
-    print(embedding_array.shape)
-    train_image_name = pickle.load(open(train_image_name, 'rb'))
+    print(embedding_array.shape, "embedding array shape")
+    train_image_name = np.load(open(train_image_name, 'rb'))
     print(len(train_image_name), "image_label_length")
     time3 = time.time()
     net.eval()
@@ -383,36 +384,35 @@ def test(embedding_array,train_image_name):
     testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 32)
     #label_list = pickle.load(open("testlist_label.pkl", 'rb'))
     #tree_array = np.vstack((outputs, embedding_array))
-    neigh =NearestNeighbors(n_neighbors=30)
+    neigh = KNeighborsClassifier(n_neighbors=30, n_jobs= -1 )
 
-    total_acc = 0
-    train_image_name_counter = 0
+    test_output =[]
+    test_label = []
     for i, data in enumerate(testloader, 0):
         # get the inputs
-        accuracy = 0
         inputs, labels = data
 
-        print(len(labels))
         inputs = inputs.to(device)
         outputs = net(inputs)
         outputs_c = outputs.cpu().data.numpy()
         del outputs
-        print(outputs_c.shape)
-        #neigh.fit()
-        for ind, group in enumerate(train_image_name):
-            for group_ind, image in enumerate(group):
-                train_image_name[ind][group_ind] = train_image_name[image].split('_')[0]
-        true_label = label_list[i]
-        counter = 0
-        for ind, group in enumerate(index):
-            train_image_name_counter += 32
+        #print(outputs_c.shape)
+        for s_label in range(outputs_c.shape[0]):
+            test_output.append(outputs_c[s_label])
+            test_label.append(labels[s_label])
+        progress_bar(i, len(testloader))
+    accuracy = 0
+    neigh.fit(embedding_array, train_image_name)
 
-            counter = np.sum()
-        print(train_image_name_counter)
-        accuracy = counter/30
-        total_acc += accuracy
-
-    print("average acc of testing: ", total_acc/100)
+    for i, data in enumerate(test_output):
+        test_array = np.repeat(test_label[i], 30, axis = 0)
+        print(data.shape)
+        labels = np.asarray(neigh.predict(data.reshape(1, -1)))
+        count = np.sum(labels == test_array)
+        tmp_accuracy = count/30
+        accuracy += tmp_accuracy
+        progress_bar(i, len(test_output))
+    print("average acc of testing: ", (accuracy/100)/100000)
     print('One time: ', time.time()- time3)
 
 main(True,sys.argv[1:])
