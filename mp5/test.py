@@ -88,6 +88,8 @@ def test(embedding_array,train_image_name):
     test_label = []
     for i, data in enumerate(testloader, 0):
         # get the inputs
+        if i == 2:
+            break
         inputs, labels = data
 
         inputs = inputs.to(device)
@@ -104,7 +106,7 @@ def test(embedding_array,train_image_name):
 
     for i, data in enumerate(outputs_c):
         test_array = np.repeat(test_label[i], 30, axis = 0)
-
+        print(data.shape)
         labels = np.asarray(neigh.predict(data))
         count = np.sum(labels == test_array)
         tmp_accuracy = count/30
