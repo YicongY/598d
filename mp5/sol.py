@@ -317,8 +317,6 @@ def main(pretrain,argv):
                 for lable_len in range(len(label)):
                     train_image_name.append(label[lable_len])
                     train_embedding.append(query_c.data.numpy()[lable_len])
-                print(len(train_image_name))
-                print(len(train_embedding))
             loss.backward()
             optimizer.step()
 
