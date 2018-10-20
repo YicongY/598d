@@ -373,7 +373,7 @@ def test(embedding_array,train_image_name):
     embedding_array = np.load(embedding_array)
     print(embedding_array.shape)
     train_image_name = pickle.load(open(train_image_name, 'rb'))
-    print(len(train_image_name))
+    print(len(train_image_name), "image_label_length")
     time3 = time.time()
     net.eval()
     testset = TripleDataset(triplelist = 'testlist.pkl', root_dir = 'tiny-imagenet-200/val/images/', train = 0,

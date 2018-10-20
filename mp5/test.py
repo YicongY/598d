@@ -74,7 +74,7 @@ def test(embedding_array,train_image_name):
     embedding_array = np.load(embedding_array)
     print(embedding_array.shape, "embedding array shape")
     train_image_name = pickle.load(open(train_image_name, 'rb'))
-    print(len(train_image_name))
+    print(len(train_image_name), "image_label_length")
     time3 = time.time()
     net.eval()
     testset = TripleDataset(triplelist = 'testlist.pkl', root_dir = 'tiny-imagenet-200/val/images/', train = 0,
@@ -86,6 +86,7 @@ def test(embedding_array,train_image_name):
 
     total_acc = 0
     train_image_name_counter = 0
+    test_output =[]
     for i, data in enumerate(testloader, 0):
         # get the inputs
         accuracy = 0
@@ -94,20 +95,14 @@ def test(embedding_array,train_image_name):
         print(len(labels))
         inputs = inputs.to(device)
         outputs = net(inputs)
-        print(outputs.shape)
-        neigh.fit(samples)
-        for ind, group in enumerate(train_image_name):
-            for group_ind, image in enumerate(group):
-                train_image_name[ind][group_ind] = train_image_name[image].split('_')[0]
-        true_label = label_list[i]
-        counter = 0
-        for ind, group in enumerate(index):
-            train_image_name_counter += 32
+        outputs_c = outputs.cpu().data.numpy()
+        del outputs
+        print(outputs_c)
 
-            counter = np.sum()
-        print(train_image_name_counter)
-        accuracy = counter/30
-        total_acc += accuracy
+        test_output.append(outputs_c)
+
+
+
 
     print("average acc of testing: ", total_acc/100)
     print('One time: ', time.time()- time3)
