@@ -275,8 +275,8 @@ def main(pretrain,argv):
         running_loss = 0.0
         train_embedding = None
         train_image_name = None
-        train_embedding = []
-        train_image_name = []
+        train_embedding = numpy.empty
+        train_image_name = numpy.empty
         if (epoch > 6):
             for group in optimizer.param_groups:
                 for p in group['params']:
@@ -315,8 +315,8 @@ def main(pretrain,argv):
             loss = criterion(query_c, positive_c, negative_c)
             if (epoch + 1) >= 1 and (epoch + 1) % 1 == 0:
                 train_image_name.append(np.asarray(label))
-                print(query_c.data.numpy().shape)
                 train_embedding.append(query_c.data.numpy())
+                print(train_embedding.shape)
             loss.backward()
             optimizer.step()
 
