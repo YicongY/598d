@@ -113,7 +113,7 @@ class TripleDataset(Dataset):
             query_image = Image.open(query_image_path).convert('RGB')
             negative_image = Image.open(negative_image_path).convert('RGB')
             sample = {'positive_image': positive_image, 'query_image': query_image, 'negative_image' : negative_image}
-            lable_ret = {'positive_label': label}
+            label_ret = {'positive_label': label}
             if self.transform:
                 for i,v in sample.items():
                     sample[i] = self.transform(v)
