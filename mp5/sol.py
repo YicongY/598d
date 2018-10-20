@@ -5,7 +5,7 @@ import pickle
 from scipy import spatial
 from sklearn.neighbors import NearestNeighbors
 import os
-from utils import progress_bar
+#from utils import progress_bar
 from pathlib import Path
 from collections import OrderedDict
 from torch.utils.data import Dataset
@@ -401,7 +401,7 @@ def test(embedding_array,train_image_name):
         for s_label in range(outputs_c.shape[0]):
             test_output.append(outputs_c[s_label])
             test_label.append(labels[s_label])
-        progress_bar(i, len(testloader))
+        #progress_bar(i, len(testloader))
     accuracy = 0
     neigh.fit(embedding_array, train_image_name)
 
@@ -412,7 +412,7 @@ def test(embedding_array,train_image_name):
         count = np.sum(labels == test_array)
         tmp_accuracy = count/30
         accuracy += tmp_accuracy
-        progress_bar(i, len(test_output))
+        #progress_bar(i, len(test_output))
     print("average acc of testing: ", (accuracy/100)/100000)
     print('One time: ', time.time()- time3)
 
