@@ -314,9 +314,11 @@ def main(pretrain,argv):
 
             loss = criterion(query_c, positive_c, negative_c)
             if (epoch + 1) >= 1 and (epoch + 1) % 1 == 0:
-                train_image_name.append(np.asarray(label))
-                train_embedding.append(query_c.data.numpy())
-                print(train_embedding.shape)
+                for lable_len in range(len(label)):
+                    train_image_name.append(label[lable_len])
+                    train_embedding.append(query_c.data.numpy()[lable_len])
+                print(len(train_image_name))
+                print(len(train_embedding))
             loss.backward()
             optimizer.step()
 
