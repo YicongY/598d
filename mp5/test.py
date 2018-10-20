@@ -72,10 +72,8 @@ def test(embedding_array,train_image_name):
     net.to(device)
 
     embedding_array = np.load(embedding_array)
-    embedding_array.reshape((100000,4096))
     print(embedding_array.shape, "embedding array shape")
     train_image_name = np.load(open(train_image_name, 'rb'))
-    train_image_name.reshape((100000,-1))
     print(len(train_image_name), "image_label_length")
     time3 = time.time()
     net.eval()
@@ -84,29 +82,35 @@ def test(embedding_array,train_image_name):
     testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 32)
     #label_list = pickle.load(open("testlist_label.pkl", 'rb'))
     #tree_array = np.vstack((outputs, embedding_array))
-    neigh =NearestNeighbors(n_neighbors=30)
+    neigh = NearestNeighbors(n_neighbors=30)
 
-    total_acc = 0
-    train_image_name_counter = 0
     test_output =[]
+    test_label = []
     for i, data in enumerate(testloader, 0):
         # get the inputs
-        accuracy = 0
         inputs, labels = data
 
-        print(len(labels))
         inputs = inputs.to(device)
         outputs = net(inputs)
         outputs_c = outputs.cpu().data.numpy()
         del outputs
-        print(outputs_c.shape)
+        #print(outputs_c.shape)
+        for s_label in range(outputs_c.shape[0])
+            test_output.append(outputs_c[s_label])
+            test_label.append(labels[s_label])
+    accuracy = 0
+    neigh.fit(embedding_array, train_image_name)
 
-        test_output.append(outputs_c)
+    for i, data in enumerate(outputs_c):
+        test_array = np.repeat(test_label[i], 30, axis = 0)
+        print(test_array)
+        print(test_array.shape)
+        labels = np.asarray(neight.predict(data))
+        count = np.sum(labels == test_array)
+        tmp_accuracy = count/30
+        accuracy += tmp_accuracy
 
-
-
-
-    print("average acc of testing: ", total_acc/100)
+    print("average acc of testing: ", accuracy/100)
     print('One time: ', time.time()- time3)
 
 test('embedding.pkl', 'train_image_name.pkl')
