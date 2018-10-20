@@ -13,5 +13,4 @@ cd scratch/598d/mp5
 module load bwpy/2.0.0-pre1
 module load cudatoolkit
 
- 
 aprun -n 1 -N 1 python sol.py --batch_size 64
