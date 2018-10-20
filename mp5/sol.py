@@ -260,11 +260,11 @@ def main(pretrain):
     loss_list = []
     loss_file = Path('loss_list.pkl')
 
-    if loss_file.is_file():
-        loss_list = pickle.load(open('loss_list.pkl', "rb"))
-
-        print("load loss list, epoch:" ,len(loss_list))
     for epoch in range(40):
+        if loss_file.is_file():
+            loss_list = pickle.load(open('loss_list.pkl', "rb"))
+
+            print("load loss list, epoch:", len(loss_list),"last_loss:", loss_list[epoch -1])
         net.train()
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
 
@@ -277,12 +277,12 @@ def main(pretrain):
         train_image_name = None
         train_embedding = []
         train_image_name = []
-        if (epoch > 6):
-            for group in optimizer.param_groups:
-                for p in group['params']:
-                    state = optimizer.state[p]
-                    if ('step' in state and state['step'] >= 1024):
-                        state['step'] = 1000
+        # if (epoch > 6):
+        #     for group in optimizer.param_groups:
+        #         for p in group['params']:
+        #             state = optimizer.state[p]
+        #             if ('step' in state and state['step'] >= 1024):
+        #                 state['step'] = 1000
         total_loss = 0
         for i, data in enumerate(trainloader, 0):
             # get the inputs
