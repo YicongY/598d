@@ -97,7 +97,7 @@ def test(embedding_array,train_image_name):
         outputs = net(inputs)
         outputs_c = outputs.cpu().data.numpy()
         del outputs
-        print(outputs_c)
+        print(outputs_c.shape)
 
         test_output.append(outputs_c)
 
