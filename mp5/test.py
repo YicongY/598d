@@ -88,8 +88,6 @@ def test(embedding_array,train_image_name):
     test_label = []
     for i, data in enumerate(testloader, 0):
         # get the inputs
-        if i == 2:
-            break
         inputs, labels = data
 
         inputs = inputs.to(device)
