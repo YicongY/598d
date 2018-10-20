@@ -107,7 +107,7 @@ def test(embedding_array,train_image_name):
     for i, data in enumerate(outputs_c):
         test_array = np.repeat(test_label[i], 30, axis = 0)
         print(data.shape)
-        labels = np.asarray(neigh.predict(data.reshape(-1,1)))
+        labels = np.asarray(neigh.predict(data.reshape(1, -1)))
         count = np.sum(labels == test_array)
         tmp_accuracy = count/30
         accuracy += tmp_accuracy
