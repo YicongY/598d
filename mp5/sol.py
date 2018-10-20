@@ -245,7 +245,7 @@ def main(pretrain):
 
     criterion = nn.TripletMarginLoss()
     #optimizer = optim.Adam(net.parameters(), lr = 0.001)
-    optimizer = optim.SGD(net.parameters(), lr = 0.001, momentum = 0.9, weight_decay = 0.01)
+    optimizer = optim.SGD(net.parameters(), lr = 0.001, momentum = 0.9)
 
     if torch.cuda.is_available():
         print('cuda')
