@@ -314,8 +314,8 @@ def main(pretrain,argv):
 
             loss = criterion(query_c, positive_c, negative_c)
             if (epoch + 1) >= 1 and (epoch + 1) % 1 == 0:
-                train_image_name = np.vstack((train_image_name,np.asarray(label)))
-                train_embedding = np.vstack(( train_embedding ,query_c.data.numpy()))
+                train_image_name = np.append(train_image_name,np.asarray(label), axis = 0)
+                train_embedding = np.append(train_embedding ,query_c.data.numpy(), axis = 0)
                 print(train_embedding.shape)
             loss.backward()
             optimizer.step()
