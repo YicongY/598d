@@ -286,8 +286,8 @@ def main(pretrain,argv):
             # get the inputs
             #print(len(image_dict))
             data_i , label = data
-            print(data_i.shape)
             positive_image = data_i['positive_image']
+            print(positive_image.shape)
             query_image = data_i['query_image']
             negative_image =data_i['negative_image']
             positive_image = positive_image.to(device)
