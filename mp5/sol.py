@@ -113,10 +113,11 @@ class TripleDataset(Dataset):
             query_image = Image.open(query_image_path).convert('RGB')
             negative_image = Image.open(negative_image_path).convert('RGB')
             sample = {'positive_image': positive_image, 'query_image': query_image, 'negative_image' : negative_image}
+            lable_ret = {'positive_label': label}
             if self.transform:
                 for i,v in sample.items():
                     sample[i] = self.transform(v)
-            return sample, self.triplelist[idx]
+            return sample, label_ret
         else:
             query_image_path = self.root_dir + self.triplelist[idx]
             label_list = pickle.load(open("testlist_label.pkl", 'rb'))
@@ -287,9 +288,9 @@ def main(pretrain,argv):
             #print(len(image_dict))
             data_i , label = data
             positive_image = data_i['positive_image']
-            print(positive_image.shape)
             query_image = data_i['query_image']
             negative_image =data_i['negative_image']
+            label = label['positive_label']
             positive_image = positive_image.to(device)
             negative_image = negative_image.to(device)
             query_image = query_image.to(device)
@@ -313,14 +314,13 @@ def main(pretrain,argv):
 
             loss = criterion(query_c, positive_c, negative_c)
             if (epoch + 1) >= 1 and (epoch + 1) % 1 == 0:
-                train_image_name.append(label)
+                train_image_name.append(label.data.numpy())
                 train_embedding.append(query_c.data.numpy())
             loss.backward()
             optimizer.step()
 
             # print statistics
             running_loss += loss.item()
-            print(len(label))
             if i % len(label) == len(label)-1:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / len(label)))
@@ -342,8 +342,9 @@ def main(pretrain,argv):
             with open('embedding.pkl', 'wb') as f:
                 np.save(f, train_embedding)
             print("output train embedding array")
+            train_image_name = np.asarray(train_image_name)
             with open('train_image_name.pkl', 'wb') as f:
-                pickle.dump(train_image_name, f)
+                np.save(f, train_image_name)
             print("output train_image_name")
            # test('embedding.pkl', 'train_image_name.pkl')
 
@@ -354,7 +355,6 @@ def main(pretrain,argv):
     #test(net, device, train_embedding, train_image_name)
 
 def test(embedding_array,train_image_name):
-
     transform = transforms.Compose(
         [transforms.Resize((224, 224)),
          transforms.ToTensor(),
