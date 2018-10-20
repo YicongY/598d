@@ -95,7 +95,7 @@ def test(embedding_array,train_image_name):
         outputs_c = outputs.cpu().data.numpy()
         del outputs
         #print(outputs_c.shape)
-        for s_label in range(outputs_c.shape[0])
+        for s_label in range(outputs_c.shape[0]):
             test_output.append(outputs_c[s_label])
             test_label.append(labels[s_label])
     accuracy = 0
