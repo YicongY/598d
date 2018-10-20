@@ -275,8 +275,8 @@ def main(pretrain,argv):
         running_loss = 0.0
         train_embedding = None
         train_image_name = None
-        train_embedding = numpy.empty
-        train_image_name = numpy.empty
+        train_embedding = np.empty
+        train_image_name = np.empty
         if (epoch > 6):
             for group in optimizer.param_groups:
                 for p in group['params']:
