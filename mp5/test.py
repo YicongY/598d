@@ -82,7 +82,7 @@ def test(embedding_array,train_image_name):
     testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 32)
     #label_list = pickle.load(open("testlist_label.pkl", 'rb'))
     #tree_array = np.vstack((outputs, embedding_array))
-    neigh = KNeighborsClassifier(n_neighbors=30, n_jobs= 32 )
+    neigh = KNeighborsClassifier(n_neighbors=30, n_jobs= -1 )
 
     test_output =[]
     test_label = []
