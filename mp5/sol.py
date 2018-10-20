@@ -187,16 +187,16 @@ class LimitedSizeDict(OrderedDict):
 #Hyper parameters
 embedding_size =4096
 
-def main(pretrain,argv):
-    batch_size = 0
-    try:
-        opts,args = getopt.getopt(argv, "hb", ["batch_size="])
-    except getopt.GetoptError:
-        print('test.py -batch_size')
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt in ('-b', "--batch_size"):
-            batch_size = int(arg)
+def main(pretrain):
+    batch_size = 64
+    # try:
+    #     opts,args = getopt.getopt(argv, "hb", ["batch_size="])
+    # except getopt.GetoptError:
+    #     print('test.py -batch_size')
+    #     sys.exit(2)
+    # for opt, arg in opts:
+    #     if opt in ('-b', "--batch_size"):
+    #         batch_size = int(arg)
     print(batch_size)
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
@@ -328,7 +328,7 @@ def main(pretrain,argv):
                       (epoch + 1, i + 1, running_loss / len(label)))
                 running_loss = 0.0
 
-                print('100 batch time: ', time.time() - time2)
+                #print('100 batch time: ', time.time() - time2)
             #progress_bar(i,len(trainloader))
         #save the model
         loss = total_loss/(len(trainloader))
@@ -416,5 +416,5 @@ def test(embedding_array,train_image_name):
     print("average acc of testing: ", (accuracy/100)/100000)
     print('One time: ', time.time()- time3)
 
-main(True,sys.argv[1:])
+main(True)
 #test('embedding.pkl', 'train_image_name.pkl')
