@@ -264,7 +264,7 @@ def main(pretrain,argv):
         loss_list = pickle.load(open('loss_list.pkl', "rb"))
 
         print("load loss list, epoch:" ,len(loss_list))
-    for epoch in range(50):
+    for epoch in range(40):
         net.train()
         pickle_file = 'triplelist' + str(epoch) + '.pkl'
 
@@ -283,6 +283,7 @@ def main(pretrain,argv):
                     state = optimizer.state[p]
                     if ('step' in state and state['step'] >= 1024):
                         state['step'] = 1000
+        total_loss = 0
         for i, data in enumerate(trainloader, 0):
             # get the inputs
             #print(len(image_dict))
@@ -328,9 +329,9 @@ def main(pretrain,argv):
                 running_loss = 0.0
 
                 print('100 batch time: ', time.time() - time2)
-            progress_bar(i,len(trainloader))
+            #progress_bar(i,len(trainloader))
         #save the model
-        loss = running_loss/(100000/3)
+        loss = total_loss/(len(trainloader))
         loss_list.append(loss)
         with open('loss_list.pkl', 'wb') as f:
             pickle.dump(loss_list, f)
