@@ -102,12 +102,12 @@ def test(embedding_array,train_image_name):
             test_label.append(labels[s_label])
         progress_bar(i, len(testloader))
     accuracy = 0
-    neigh.fit(embedding_array, train_image_name)
+    neigh.fit(embedding_array[:2], train_image_name[:2])
 
     for i, data in enumerate(outputs_c):
         test_array = np.repeat(test_label[i], 30, axis = 0)
         print(data.shape)
-        labels = np.asarray(neigh.predict(data))
+        labels = np.asarray(neigh.predict(data.reshape(-1,1)))
         count = np.sum(labels == test_array)
         tmp_accuracy = count/30
         accuracy += tmp_accuracy
