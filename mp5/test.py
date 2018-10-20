@@ -3,7 +3,7 @@ import time
 import torch
 import pickle
 from scipy import spatial
-from sklearn.neighbors import NearestNeighbors
+from sklearn.neighbors import KNeighborsClassifier
 import os
 from utils import progress_bar
 from pathlib import Path
@@ -82,7 +82,7 @@ def test(embedding_array,train_image_name):
     testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 32)
     #label_list = pickle.load(open("testlist_label.pkl", 'rb'))
     #tree_array = np.vstack((outputs, embedding_array))
-    neigh = NearestNeighbors(n_neighbors=30)
+    neigh = KNeighborsClassifier(n_neighbors=30, n_jobs= 32 )
 
     test_output =[]
     test_label = []
