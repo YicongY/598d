@@ -111,14 +111,12 @@ def test(embedding_array,train_image_name):
     time_fit = time.time()
     print("begin to predict")
     test_output = np.asarray(test_output)
-    predict_out = neigh.predict(test_output[:128])
+    predict_out = neigh.kneighbors(test_output[:128])
     print("finish predict", time.time() - time_fit)
-    print(predict_out)
     for i, data in enumerate(predict_out[1]):
         test_array = np.repeat(test_label[i], 30, axis = 0)
         #print(data.shape)
         labellist = []
-        print(data)
         for data_i in data:
             labellist.append(train_image_name[data_i])
         print(labellist)
