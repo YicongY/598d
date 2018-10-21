@@ -106,7 +106,7 @@ def test(embedding_array,train_image_name):
     accuracy = 0
     time_fit = time.time()
     print("begin to fit the model")
-    neigh.fit(embedding_array[:128], train_image_name[:128])
+    neigh.fit(embedding_array[:10000], train_image_name[:10000])
     print("finish_fitting",time.time() - time_fit)
     time_fit = time.time()
     print("begin to predict")
