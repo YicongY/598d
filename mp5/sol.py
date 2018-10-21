@@ -17,6 +17,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 import sys, getopt
 from torchvision import models as t_models
+
 class B_Block(nn.Module):
     def __init__(self, inlayer, outlayer, filter_size = 3, first_stride = 1, padding = 1, downsample_net = None):
         super(B_Block, self).__init__()
@@ -200,8 +201,6 @@ def main(pretrain):
     print(batch_size)
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
-         transforms.RandomCrop(32,4),
-         transforms.RandomRotation(10),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
@@ -209,11 +208,10 @@ def main(pretrain):
         net = t_models.resnet18(pretrained = True)
         num_inp = net.fc.in_features
         net.fc = nn.Linear(num_inp, embedding_size)
+
         transform = transforms.Compose(
         [transforms.Resize((224,224)),
          transforms.RandomHorizontalFlip(),
-         transforms.RandomCrop(224, 4),
-         transforms.RandomRotation(10),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     else:
@@ -325,6 +323,7 @@ def main(pretrain):
 
             # print statistics
             running_loss += loss.item()
+            total_loss += running_loss
             if i % len(label) == len(label)-1:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / len(label)))
@@ -335,23 +334,23 @@ def main(pretrain):
         #save the model
         loss = total_loss/(len(trainloader))
         loss_list.append(loss)
+
         with open('loss_list.pkl', 'wb') as f:
             pickle.dump(loss_list, f)
             print("save loss")
         torch.save(net.state_dict(), "model.pt")
         print("save model")
 
-        if (epoch + 1) >= 1 and (epoch + 1) % 1 == 0:
-            train_embedding = np.asarray(train_embedding)
-            with open('embedding.pkl', 'wb') as f:
-                np.save(f, train_embedding)
-            print("output train embedding array")
-            train_image_name = np.asarray(train_image_name)
-            with open('train_image_name.pkl', 'wb') as f:
-                np.save(f, train_image_name)
-            print("output train_image_name")
-           # test('embedding.pkl', 'train_image_name.pkl')
 
+        train_embedding = np.asarray(train_embedding)
+        with open('embedding.pkl', 'wb') as f:
+            np.save(f, train_embedding)
+        print("output train embedding array")
+        train_image_name = np.asarray(train_image_name)
+        with open('train_image_name.pkl', 'wb') as f:
+            np.save(f, train_image_name)
+        print("output train_image_name")
+           # test('embedding.pkl', 'train_image_name.pkl')
     print('Total time: ', time.time() -time1)
     print('Finished Training')
     print('Start Testing')
