@@ -62,6 +62,10 @@ def test(embedding_array,train_image_name):
     net = t_models.resnet18(pretrained=True)
     num_inp = net.fc.in_features
     net.fc = nn.Linear(num_inp, embedding_size)
+    model_file = Path("model.pt")
+    if model_file.is_file():
+        net.load_state_dict(torch.load("model.pt"))
+        print("load previous model parameters")
     if torch.cuda.is_available():
         print('cuda')
         device = torch.device('cuda:0')
@@ -110,7 +114,7 @@ def test(embedding_array,train_image_name):
         tmp_accuracy = count/30
         accuracy += tmp_accuracy
         progress_bar(i, len(test_output))
-    print("average acc of testing: ", (accuracy/100)/100000)
+    print("average acc of testing: ", (accuracy)/10000)
     print('One time: ', time.time()- time3)
 
 test('embedding.pkl', 'train_image_name.pkl')
