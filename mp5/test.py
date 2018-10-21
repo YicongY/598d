@@ -104,8 +104,9 @@ def test(embedding_array,train_image_name):
             test_label.append(labels[s_label])
         progress_bar(i, len(testloader))
     accuracy = 0
+    print("begin to fit the model")
     neigh.fit(embedding_array, train_image_name)
-
+    print("finish_fitting")
     for i, data in enumerate(test_output):
         test_array = np.repeat(test_label[i], 30, axis = 0)
         print(data.shape)
@@ -113,6 +114,7 @@ def test(embedding_array,train_image_name):
         count = np.sum(labels == test_array)
         tmp_accuracy = count/30
         accuracy += tmp_accuracy
+        print("current accuracy",accuracy, "epoch",i)
         progress_bar(i, len(test_output))
     print("average acc of testing: ", (accuracy)/10000)
     print('One time: ', time.time()- time3)
