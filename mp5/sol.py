@@ -205,7 +205,7 @@ def main(pretrain,argv):
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
     if pretrain == True:
-        net = t_models.resnet18(pretrained = True)
+        net = t_models.resnet50(pretrained = True)
         num_inp = net.fc.in_features
         net.fc = nn.Linear(num_inp, embedding_size)
 
@@ -221,8 +221,6 @@ def main(pretrain,argv):
     if model_file.is_file():
         net.load_state_dict(torch.load("model.pt"))
         print("load previous model parameters")
-
-
     # child_counter = 0
     # for child in net.children():
     #     # print(child_counter)
@@ -363,9 +361,13 @@ def test(embedding_array,train_image_name):
         [transforms.Resize((224,224)),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-    net = t_models.resnet18(pretrained=True)
+    net = t_models.resnet50(pretrained=True)
     num_inp = net.fc.in_features
     net.fc = nn.Linear(num_inp, embedding_size)
+    model_file = Path("model.pt")
+    if model_file.is_file():
+        net.load_state_dict(torch.load("model.pt"))
+        print("load previous model parameters")
     if torch.cuda.is_available():
         print('cuda')
         device = torch.device('cuda:0')
@@ -383,7 +385,7 @@ def test(embedding_array,train_image_name):
     net.eval()
     testset = TripleDataset(triplelist = 'testlist.pkl', root_dir = 'tiny-imagenet-200/val/images/', train = 0,
                              transform = transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 4)
+    testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 32)
     #label_list = pickle.load(open("testlist_label.pkl", 'rb'))
     #tree_array = np.vstack((outputs, embedding_array))
     neigh = KNeighborsClassifier(n_neighbors=30, n_jobs= -1 )
@@ -402,19 +404,32 @@ def test(embedding_array,train_image_name):
         for s_label in range(outputs_c.shape[0]):
             test_output.append(outputs_c[s_label])
             test_label.append(labels[s_label])
-        #progress_bar(i, len(testloader))
+        progress_bar(i, len(testloader))
     accuracy = 0
+    time_fit = time.time()
+    print("begin to fit the model")
     neigh.fit(embedding_array, train_image_name)
-
-    for i, data in enumerate(test_output):
+    print("finish_fitting",time.time() - time_fit)
+    time_fit = time.time()
+    print("begin to predict")
+    test_output = np.asarray(test_output)
+    predict_out = neigh.predict(test_output[:128])
+    print("finish predict", time.time() - time_fit)
+    print(predict_out[1].shape)
+    for i, data in enumerate(predict_out[1]):
         test_array = np.repeat(test_label[i], 30, axis = 0)
-        print(data.shape)
-        labels = np.asarray(neigh.predict(data.reshape(1, -1)))
-        count = np.sum(labels == test_array)
+        #print(data.shape)
+        labellist = []
+        for data_i in data:
+            labellist.append(train_image_name[data_i])
+        print(labellist)
+
+        count = np.sum(np.asarray(labellist) == test_array)
         tmp_accuracy = count/30
         accuracy += tmp_accuracy
-        #progress_bar(i, len(test_output))
-    print("average acc of testing: ", (accuracy/100)/100000)
+        print("current accuracy",accuracy, "epoch",i)
+        progress_bar(i, len(predict_out))
+    print("average acc of testing: ", (accuracy)/10000)
     print('One time: ', time.time()- time3)
 
 main(True,sys.argv[1:])
