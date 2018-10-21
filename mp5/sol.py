@@ -5,7 +5,7 @@ import pickle
 from scipy import spatial
 from sklearn.neighbors import NearestNeighbors
 import os
-#from utils import progress_bar
+from utils import progress_bar
 from pathlib import Path
 from collections import OrderedDict
 from torch.utils.data import Dataset
@@ -188,16 +188,16 @@ class LimitedSizeDict(OrderedDict):
 #Hyper parameters
 embedding_size =4096
 
-def main(pretrain):
+def main(pretrain,argv):
     batch_size = 64
-    # try:
-    #     opts,args = getopt.getopt(argv, "hb", ["batch_size="])
-    # except getopt.GetoptError:
-    #     print('test.py -batch_size')
-    #     sys.exit(2)
-    # for opt, arg in opts:
-    #     if opt in ('-b', "--batch_size"):
-    #         batch_size = int(arg)
+    try:
+        opts,args = getopt.getopt(argv, "hb", ["batch_size="])
+    except getopt.GetoptError:
+        print('test.py -batch_size')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ('-b', "--batch_size"):
+            batch_size = int(arg)
     print(batch_size)
     transform = transforms.Compose(
         [transforms.RandomHorizontalFlip(),
@@ -270,7 +270,7 @@ def main(pretrain):
 
         trainset = TripleDataset(triplelist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size = batch_size,
-                                                  shuffle=True, num_workers = 32)
+                                                  shuffle=True, num_workers = 4)
         time2 = time.time()
         running_loss = 0.0
         train_embedding = None
@@ -330,7 +330,7 @@ def main(pretrain):
                 running_loss = 0.0
 
                 #print('100 batch time: ', time.time() - time2)
-            #progress_bar(i,len(trainloader))
+            progress_bar(i,len(trainloader))
         #save the model
         loss = total_loss/(len(trainloader))
         loss_list.append(loss)
@@ -383,7 +383,7 @@ def test(embedding_array,train_image_name):
     net.eval()
     testset = TripleDataset(triplelist = 'testlist.pkl', root_dir = 'tiny-imagenet-200/val/images/', train = 0,
                              transform = transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 32)
+    testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 4)
     #label_list = pickle.load(open("testlist_label.pkl", 'rb'))
     #tree_array = np.vstack((outputs, embedding_array))
     neigh = KNeighborsClassifier(n_neighbors=30, n_jobs= -1 )
@@ -417,5 +417,5 @@ def test(embedding_array,train_image_name):
     print("average acc of testing: ", (accuracy/100)/100000)
     print('One time: ', time.time()- time3)
 
-main(True)
+main(True,sys.argv[1:])
 #test('embedding.pkl', 'train_image_name.pkl')
