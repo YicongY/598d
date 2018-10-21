@@ -188,7 +188,7 @@ class LimitedSizeDict(OrderedDict):
 #Hyper parameters
 embedding_size =4096
 
-def main(pretrain,args):
+def main(pretrain,argv):
     batch_size = 64
     try:
         opts,args = getopt.getopt(argv, "hb", ["batch_size="])
@@ -417,5 +417,5 @@ def test(embedding_array,train_image_name):
     print("average acc of testing: ", (accuracy/100)/100000)
     print('One time: ', time.time()- time3)
 
-main(True,args[1:])
+main(True,sys.argv[1:])
 #test('embedding.pkl', 'train_image_name.pkl')
