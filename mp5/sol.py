@@ -264,9 +264,9 @@ def main(pretrain):
         if loss_file.is_file():
             loss_list = pickle.load(open('loss_list.pkl', "rb"))
 
-            print("load loss list, epoch:", len(loss_list),"last_loss:", loss_list[epoch -1])
+            print("load loss list, epoch:", len(loss_list),"last_loss:", loss_list[len(loss_list) -2])
         net.train()
-        pickle_file = 'triplelist' + str(epoch) + '.pkl'
+        pickle_file = 'triplelist' + str(len(loss_list)) + '.pkl'
 
         trainset = TripleDataset(triplelist = pickle_file,root_dir = 'tiny-imagenet-200/train', train = 1, transform = transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size = batch_size,
