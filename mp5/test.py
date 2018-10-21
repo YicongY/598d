@@ -107,11 +107,14 @@ def test(embedding_array,train_image_name):
     print("begin to fit the model")
     neigh.fit(embedding_array, train_image_name)
     print("finish_fitting")
-    for i, data in enumerate(test_output):
+    print("begin to predict")
+    test_output = np.asarray(test_output)
+    predict_out = neigh.predict(test_output)
+    print("finish predict")
+    for i, data in enumerate(predict_out):
         test_array = np.repeat(test_label[i], 30, axis = 0)
-        print(data.shape)
-        labels = np.asarray(neigh.predict(data.reshape(1, -1)))
-        count = np.sum(labels == test_array)
+        #print(data.shape)
+        count = np.sum(data == test_array)
         tmp_accuracy = count/30
         accuracy += tmp_accuracy
         print("current accuracy",accuracy, "epoch",i)
