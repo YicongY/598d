@@ -119,14 +119,11 @@ def test(embedding_array,train_image_name):
         labellist = []
         for data_i in data:
             labellist.append(train_image_name[data_i])
-        print(labellist)
-
         count = np.sum(np.asarray(labellist) == test_array)
         tmp_accuracy = count/30
         accuracy += tmp_accuracy
-        print("current accuracy",accuracy, "epoch",i)
         progress_bar(i, len(predict_out))
-    print("average acc of testing: ", (accuracy)/10000)
+    print("average acc of testing: ", (accuracy)/128)
     print('One time: ', time.time()- time3)
 
 test('embedding.pkl', 'train_image_name.pkl')
