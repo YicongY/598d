@@ -5,7 +5,7 @@ import pickle
 from scipy import spatial
 from sklearn.neighbors import NearestNeighbors
 import os
-from utils import progress_bar
+#from utils import progress_bar
 from pathlib import Path
 from collections import OrderedDict
 from torch.utils.data import Dataset
@@ -114,7 +114,7 @@ class TripleDataset(Dataset):
             query_image = Image.open(query_image_path).convert('RGB')
             negative_image = Image.open(negative_image_path).convert('RGB')
             sample = {'positive_image': positive_image, 'query_image': query_image, 'negative_image' : negative_image}
-            label_ret = {'positive_label': label}
+            label_ret = {'positive_label': label, "name": self.triplelist[idx][0]}
             if self.transform:
                 for i,v in sample.items():
                     sample[i] = self.transform(v)
@@ -129,16 +129,14 @@ class TripleDataset(Dataset):
 
 def TestGenerator():
     root = "data/tiny-imagenet-200/val/images"
-    image_list = os.listdir(root)
-    print(image_list[0:10])
-    print(len(image_list))
+    image_list = []
     with open('data/tiny-imagenet-200/val/val_annotations.txt', 'r') as f:
         class_lable = []
         lines =  f.readlines()
         for line in lines:
             tmp = line.rstrip().split()
             class_lable.append(tmp[1])
-        print(class_lable[0:10])
+            image_list.append(tmp[0])
         with open('testlist_label.pkl', 'wb') as f:
             pickle.dump(class_lable, f)
 
@@ -275,6 +273,7 @@ def main(pretrain,argv):
         train_image_name = None
         train_embedding = []
         train_image_name = []
+        train_image_name_real = []
         # if (epoch > 6):
         #     for group in optimizer.param_groups:
         #         for p in group['params']:
@@ -290,6 +289,7 @@ def main(pretrain,argv):
             query_image = data_i['query_image']
             negative_image =data_i['negative_image']
             label = label['positive_label']
+            name = label['name']
             positive_image = positive_image.to(device)
             negative_image = negative_image.to(device)
             query_image = query_image.to(device)
@@ -316,21 +316,22 @@ def main(pretrain,argv):
                 for lable_len in range(len(label)):
                     train_image_name.append(label[lable_len])
                     train_embedding.append(query_c.data.numpy()[lable_len])
+                    train_image_name_real.append(name[lable_len])
             loss.backward()
             optimizer.step()
 
             # print statistics
             running_loss += loss.item()
             total_loss += running_loss
-            if i % len(label) == len(label)-1:  # print every 2000 mini-batches
+            if i % len(label * 7) == len(label * 7)-1:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / len(label)))
+                      (epoch + 1, i + 1, running_loss / len(label * 7)))
                 running_loss = 0.0
 
                 #print('100 batch time: ', time.time() - time2)
-            progress_bar(i,len(trainloader))
+            #progress_bar(i,len(trainloader))
         #save the model
-        loss = total_loss/(len(trainloader))
+        loss = total_loss/(len(trainloader * batch_size))
         loss_list.append(loss)
 
         with open('loss_list.pkl', 'wb') as f:
@@ -338,7 +339,6 @@ def main(pretrain,argv):
             print("save loss")
         torch.save(net.state_dict(), "model.pt")
         print("save model")
-
 
         train_embedding = np.asarray(train_embedding)
         with open('embedding.pkl', 'wb') as f:
@@ -348,6 +348,9 @@ def main(pretrain,argv):
         with open('train_image_name.pkl', 'wb') as f:
             np.save(f, train_image_name)
         print("output train_image_name")
+        with open('train_image_name_real.pkl', 'wb') as f:
+            np.save(f, train_image_name_real)
+        print("output train_image_name_real")
            # test('embedding.pkl', 'train_image_name.pkl')
     print('Total time: ', time.time() -time1)
     print('Finished Training')
@@ -404,7 +407,7 @@ def test(embedding_array,train_image_name):
         for s_label in range(outputs_c.shape[0]):
             test_output.append(outputs_c[s_label])
             test_label.append(labels[s_label])
-        progress_bar(i, len(testloader))
+        #progress_bar(i, len(testloader))
     accuracy = 0
     time_fit = time.time()
     print("begin to fit the model")
@@ -432,5 +435,6 @@ def test(embedding_array,train_image_name):
     print("average acc of testing: ", (accuracy)/10000)
     print('One time: ', time.time()- time3)
 
-main(True,sys.argv[1:])
+#main(True,sys.argv[1:])
+TestGenerator()
 #test('embedding.pkl', 'train_image_name.pkl')
