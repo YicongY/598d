@@ -205,7 +205,7 @@ def main(pretrain,argv):
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
     if pretrain == True:
-        net = t_models.resnet50(pretrained = True)
+        net = t_models.resnet101(pretrained = True)
         num_inp = net.fc.in_features
         net.fc = nn.Linear(num_inp, embedding_size)
 
