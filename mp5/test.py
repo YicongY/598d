@@ -106,12 +106,12 @@ def test(embedding_array,train_image_name):
     accuracy = 0
     time_fit = time.time()
     print("begin to fit the model")
-    neigh.fit(embedding_array[:10000], train_image_name[:10000])
+    neigh.fit(embedding_array[], train_image_name[])
     print("finish_fitting",time.time() - time_fit)
     time_fit = time.time()
     print("begin to predict")
     test_output = np.asarray(test_output)
-    predict_out = neigh.kneighbors(test_output[:128])
+    predict_out = neigh.kneighbors(test_output[])
     print("finish predict", time.time() - time_fit)
     for i, data in enumerate(predict_out[1]):
         test_array = np.repeat(test_label[i], 30, axis = 0)
