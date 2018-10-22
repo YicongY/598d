@@ -284,12 +284,12 @@ def main(pretrain,argv):
         for i, data in enumerate(trainloader, 0):
             # get the inputs
             #print(len(image_dict))
-            data_i , label = data
+            data_i , labels = data
             positive_image = data_i['positive_image']
             query_image = data_i['query_image']
             negative_image =data_i['negative_image']
-            label = label['positive_label']
-            name = label['name']
+            label = labels['positive_label']
+            name = labels['name']
             positive_image = positive_image.to(device)
             negative_image = negative_image.to(device)
             query_image = query_image.to(device)
