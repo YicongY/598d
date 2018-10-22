@@ -193,8 +193,8 @@ def validate(embedding_array,train_image_name):
     top_ten = np.array(predict_out[1]).flatten()
     top_ten_dis = np.array(predict_out[0]).flatten()
     predict_out_10 = neigh.kneighbors(test_output, n_neighbors=100000)
-    bottom_ten = np.array(predict_out_10[1][-10:]).flatten()
-    bottom_ten_dis = np.array(predict_out_10[0][-10:]).flatten()
+    bottom_ten = np.array(predict_out_10[1][:-10:-1]).flatten()
+    bottom_ten_dis = np.array(predict_out_10[0][:-10:-1]).flatten()
 
     print("finish predict", time.time() - time_fit)
     with open('testname_list.pkl', 'wb') as f:
@@ -203,16 +203,13 @@ def validate(embedding_array,train_image_name):
     train_image_name_real = np.array(train_image_name_real)
     top_ten_name =  list(train_image_name_real[top_ten])
     bottom_ten_name = list(train_image_name_real[bottom_ten])
-    print("Testname", test_name_list)
-    print("topten", top_ten_name)
-    print("bottomten", bottom_ten_name)
     with open('topname_list.pkl', 'wb') as f:
         pickle.dump(top_ten_name, f)
     with open('botname_list.pkl', 'wb') as f:
         pickle.dump(bottom_ten_name, f)
     with open('topname_list_dis.pkl', 'wb') as f:
         pickle.dump(top_ten_dis, f)
-    with open('botname_list_dis.pkl_dis', 'wb') as f:
+    with open('botname_list_dis.pkl', 'wb') as f:
         pickle.dump(bottom_ten_dis, f)
 
 
