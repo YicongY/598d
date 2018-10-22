@@ -59,7 +59,7 @@ def test(embedding_array,train_image_name):
         [transforms.Resize((224,224)),
          transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-    net = t_models.resnet18(pretrained=True)
+    net = t_models.resnet101(pretrained=True)
     num_inp = net.fc.in_features
     net.fc = nn.Linear(num_inp, embedding_size)
     model_file = Path("model.pt")
@@ -83,7 +83,7 @@ def test(embedding_array,train_image_name):
     net.eval()
     testset = TripleDataset(triplelist = 'testlist.pkl', root_dir = 'tiny-imagenet-200/val/images/', train = 0,
                              transform = transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 32)
+    testloader = torch.utils.data.DataLoader(testset, batch_size= 128,shuffle=True, num_workers = 4)
     #label_list = pickle.load(open("testlist_label.pkl", 'rb'))
     #tree_array = np.vstack((outputs, embedding_array))
     neigh = KNeighborsClassifier(n_neighbors=30, n_jobs= -1 )
@@ -111,7 +111,7 @@ def test(embedding_array,train_image_name):
     time_fit = time.time()
     print("begin to predict")
     test_output = np.asarray(test_output)
-    predict_out = neigh.kneighbors(test_output)
+    predict_out = neigh.kneighbors(test_output[:1000])
     print("finish predict", time.time() - time_fit)
     for i, data in enumerate(predict_out[1]):
         test_array = np.repeat(test_label[i], 30, axis = 0)
@@ -123,7 +123,7 @@ def test(embedding_array,train_image_name):
         tmp_accuracy = count/30
         accuracy += tmp_accuracy
         progress_bar(i, len(predict_out[1]))
-    print("average acc of testing: ", (accuracy)/128)
+    print("average acc of testing: ", (accuracy)/1000)#test_output.shape[0])
     print('One time: ', time.time()- time3)
 
 test('embedding.pkl', 'train_image_name.pkl')
