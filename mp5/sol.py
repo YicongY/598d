@@ -435,6 +435,6 @@ def test(embedding_array,train_image_name):
     print("average acc of testing: ", (accuracy)/10000)
     print('One time: ', time.time()- time3)
 
-#main(True,sys.argv[1:])
-TestGenerator()
+main(True,sys.argv[1:])
+#TestGenerator()
 #test('embedding.pkl', 'train_image_name.pkl')
