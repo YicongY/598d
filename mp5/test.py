@@ -120,9 +120,11 @@ def test(embedding_array,train_image_name):
         for data_i in data:
             labellist.append(train_image_name[data_i])
         labellist = np.asarray(labellist)
+        print(labellist)
+        print(test_array)
         count += np.sum(labellist == test_array)
         progress_bar(i, len(predict_out[1]))
-    print("average acc of testing: ", (count)/(300*30))#test_output.shape[0])
+    print("average acc of testing: ", (count)* 100 /(300*30))#test_output.shape[0])
     print('One time: ', time.time()- time3)
 
 test('embedding.pkl', 'train_image_name.pkl')
