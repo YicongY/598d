@@ -106,29 +106,24 @@ def test(embedding_array,train_image_name):
     accuracy = 0
     time_fit = time.time()
     print("begin to fit the model")
-    neigh.fit(embedding_array[:1000], train_image_name[:1000])
+    neigh.fit(embedding_array, train_image_name)
     print("finish_fitting",time.time() - time_fit)
     time_fit = time.time()
     print("begin to predict")
     test_output = np.asarray(test_output)
     predict_out = neigh.kneighbors(test_output[:100])
     print("finish predict", time.time() - time_fit)
+    count = 0
     for i, data in enumerate(predict_out[1]):
         test_array = np.repeat(test_label[i], 30, axis = 0)
         #print(data.shape)
-        if i == 3:
-            break
         labellist = []
         for data_i in data:
             labellist.append(train_image_name[data_i])
-        print(test_array)
         labellist = np.asarray(labellist)
-        print(labellist)
-        count = np.sum(labellist == test_array)
-        tmp_accuracy = count/30
-        accuracy += tmp_accuracy
+        count += np.sum(labellist == test_array)
         progress_bar(i, len(predict_out[1]))
-    print("average acc of testing: ", (accuracy)/100)#test_output.shape[0])
+    print("average acc of testing: ", (accuracy)/(100*30))#test_output.shape[0])
     print('One time: ', time.time()- time3)
 
 test('embedding.pkl', 'train_image_name.pkl')
