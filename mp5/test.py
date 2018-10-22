@@ -104,7 +104,6 @@ def test(embedding_array,train_image_name):
             test_label.append(labels[s_label])
         progress_bar(i, len(testloader))
     time_fit = time.time()
-    embedding_array = torch.load("")
     print("begin to fit the model")
     neigh.fit(embedding_array, train_image_name)
     print("finish_fitting",time.time() - time_fit)
@@ -125,7 +124,7 @@ def test(embedding_array,train_image_name):
         #print(test_array)
         count += np.sum(labellist == test_array)
         progress_bar(i, len(predict_out[1]))
-    print("average acc of testing: ", (count)* 100 /(predict_out.shape[0]*30))#test_output.shape[0])
+    print("average acc of testing: ", (count)* 100 /(len(predict_out[1])*30))#test_output.shape[0])
     print('One time: ', time.time()- time3)
 
 test('embedding.pkl', 'train_image_name.pkl')
