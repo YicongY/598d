@@ -114,12 +114,17 @@ def test(embedding_array,train_image_name):
     predict_out = neigh.kneighbors(test_output[:100])
     print("finish predict", time.time() - time_fit)
     for i, data in enumerate(predict_out[1]):
-        test_array = np.repeat(test_label[i], 30, axis = 1)
+        test_array = np.repeat(test_label[i], 30, axis = 0)
         #print(data.shape)
+        if i == 3:
+            break
         labellist = []
         for data_i in data:
             labellist.append(train_image_name[data_i])
-        count = np.sum(np.asarray(labellist) == test_array)
+        print(test_array.shape)
+        labellist = np.asarray(labellist)
+        print(labellist.shape)
+        count = np.sum(labellist == test_array)
         tmp_accuracy = count/30
         accuracy += tmp_accuracy
         progress_bar(i, len(predict_out[1]))
