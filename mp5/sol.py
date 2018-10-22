@@ -331,7 +331,7 @@ def main(pretrain,argv):
                 #print('100 batch time: ', time.time() - time2)
             #progress_bar(i,len(trainloader))
         #save the model
-        loss = total_loss/(len(trainloader * batch_size))
+        loss = total_loss/(len(trainloader) * batch_size)
         loss_list.append(loss)
 
         with open('loss_list.pkl', 'wb') as f:
