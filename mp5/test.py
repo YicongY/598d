@@ -106,7 +106,7 @@ def test(embedding_array,train_image_name):
     accuracy = 0
     time_fit = time.time()
     print("begin to fit the model")
-    neigh.fit(embedding_array, train_image_name)
+    neigh.fit(embedding_array[:1000], train_image_name[:1000])
     print("finish_fitting",time.time() - time_fit)
     time_fit = time.time()
     print("begin to predict")
@@ -121,9 +121,9 @@ def test(embedding_array,train_image_name):
         labellist = []
         for data_i in data:
             labellist.append(train_image_name[data_i])
-        print(test_array.shape)
+        print(test_array)
         labellist = np.asarray(labellist)
-        print(labellist.shape)
+        print(labellist)
         count = np.sum(labellist == test_array)
         tmp_accuracy = count/30
         accuracy += tmp_accuracy
